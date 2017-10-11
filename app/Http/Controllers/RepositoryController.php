@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Provider;
 use App\Models\Repository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -17,18 +18,9 @@ class RepositoryController extends Controller
 			return response('Repository not found', 404);
 		}
 
-		// Try to find a registered provider
-		$providerName = sprintf('%s/%s', $namespace, $package);
-		$provider = $repo->providers()
-			->where('name', $providerName)
-			->first();
-
-		// TODO: support existing providers (race condition? broken logic?)
-		if ($provider !== null) {
-			throw new \Exception('unexpected existing provider');
-		}
-
 		// Walk through provider includes to find provider hash
+		$providerName = sprintf('%s/%s', $namespace, $package);
+		$parentInclude = null;
 		$providerSHA256 = null;
 		foreach ($repo->providerIncludes as $providerInclude) {
 			$includeFile = str_replace('%hash%', $providerInclude->sha256, $providerInclude->pattern);
@@ -36,8 +28,9 @@ class RepositoryController extends Controller
 
 			$includePath = sprintf('%s/app/mirrors/%s/%s', storage_path(), $repo->name, $includeFile);
 			$provider = $this->findProviderInProviderInclude($includePath, $providerName);
-			
+
 			if ($provider !== null) {
+				$parentInclude = $providerInclude;
 				$providerSHA256 = $provider->sha256;
 				break;
 			}
@@ -54,12 +47,25 @@ class RepositoryController extends Controller
 		$providerData = file_get_contents($remoteProviderURL);
 
 		// Store provider file in our public repo
-		$providerLocalPath = sprintf('%s/repo/%s%s', public_path(), $repo->name, $providerPath);
+		$providerLocalPath = sprintf('%s/repo/%s/%s/%s.json', public_path(), $repo->name, $namespace, $package);
 		$providerLocalDir = dirname($providerLocalPath);
 		if (!is_dir($providerLocalDir)) {
 			mkdir($providerLocalDir, 0750, true);
 		}
 		file_put_contents($providerLocalPath, $providerData);
+
+		// Register provider model
+		$provider = $repo->providers()
+			->where('name', $providerName)
+			->first();
+		if ($provider === null) {
+			$provider = new Provider();
+			$provider->name = $providerName;
+			$provider->repository()->associate($repo);
+		}
+		$provider->providerInclude()->associate($parentInclude);
+		$provider->sha256 = $providerSHA256;
+		$provider->save();
 
 		// Output provider data - next time, the request will be served directly through the file we just created
 		return response($providerData, 200)
