@@ -13,5 +13,5 @@
 
 $repoPath = config('repositories.public_path');
 
-Route::get('/repo/{repo}/{namespace}/{package}.json', 'RepositoryController@downloadPackage');
-Route::get('/repo/{repo}/dist/{namespace}/{package}/{version}/{reference}.{type}', 'RepositoryController@downloadDist');
+Route::get('/repo/{repo}/pack/{namespace}/{package}.json', 'RepositoryController@downloadPackage');
+Route::get('/repo/{repo}/dist/{namespace}/{package}/{version}-{reference}.{type}', 'RepositoryController@downloadDist');

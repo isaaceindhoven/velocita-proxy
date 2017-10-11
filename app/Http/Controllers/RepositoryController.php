@@ -22,7 +22,7 @@ class RepositoryController extends Controller
 
 		// Locate the provider file
 		$packageName = sprintf('%s/%s', $namespace, $package);
-		$providerPath = sprintf('%s/repo/%s/%s.json', public_path(), $repo->name, $packageName);
+		$providerPath = sprintf('%s/repo/%s/pack/%s.json', public_path(), $repo->name, $packageName);
 		if (!is_readable($providerPath)) {
 			return response('Unknown provider', 404);
 		}
@@ -68,7 +68,7 @@ class RepositoryController extends Controller
 
 		// Prepare download
 		$distURL = $distData->url;
-		$distLocalPath = sprintf('%s/repo/%s/dist/%s/%s/%s.%s', public_path(), $repo->name, $packageName, $version, $reference, $type);
+		$distLocalPath = sprintf('%s/repo/%s/dist/%s/%s-%s.%s', public_path(), $repo->name, $packageName, $version, $reference, $type);
 		$distLocalDir = dirname($distLocalPath);
 		if (!is_dir($distLocalDir)) {
 			mkdir($distLocalDir, 0750, true);
@@ -143,7 +143,7 @@ class RepositoryController extends Controller
 		}
 
 		// Store provider file in our public repo
-		$providerLocalPath = sprintf('%s/repo/%s/%s/%s.json', public_path(), $repo->name, $namespace, $package);
+		$providerLocalPath = sprintf('%s/repo/%s/pack/%s.json', public_path(), $repo->name, $providerName);
 		$providerLocalDir = dirname($providerLocalPath);
 		if (!is_dir($providerLocalDir)) {
 			mkdir($providerLocalDir, 0750, true);

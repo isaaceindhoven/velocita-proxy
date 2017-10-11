@@ -160,10 +160,10 @@ class MirrorSynchronize extends Command {
 			'search'             => 'https://packagist.org' . $repo->search_pattern,
 
 			'providers-url'      => $repo->providers_pattern,
-			'providers-lazy-url' => sprintf('/repo/%s/%%package%%.json', $repo->name),
+			'providers-lazy-url' => sprintf('/repo/%s/pack/%%package%%.json', $repo->name),
 			'mirrors' => [
 				[
-					'dist-url'  => url(sprintf('/repo/%s/dist/%%package%%/%%version%%/%%reference%%.%%type%%', $repo->name)),
+					'dist-url'  => url(sprintf('/repo/%s/dist/%%package%%/%%version%%-%%reference%%.%%type%%', $repo->name)),
 					'preferred' => true,
 				]
 			],
