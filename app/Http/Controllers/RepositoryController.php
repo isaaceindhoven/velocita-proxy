@@ -75,9 +75,10 @@ class RepositoryController extends Controller
 		}
 
 		// Download dist and stream to output immediately
-		$storeAndOutput = function() use ($distURL, $distLocalPath) {
+		$requestConfig = $this->getGuzzleConfig($distURL);
+		$storeAndOutput = function() use ($distURL, $distLocalPath, $requestConfig) {
 			$client = new HttpClient();
-			$response = $client->request('GET', $distURL, ['stream' => true]);
+			$response = $client->request('GET', $distURL, $requestConfig);
 			$body = $response->getBody();
 
 			// TODO: write to temporary file and rename afterwards
@@ -168,7 +169,7 @@ class RepositoryController extends Controller
 			->header('Content-Type', 'application/json');
 	}
 
-	private function findProviderInProviderInclude($path, $provider)
+	protected function findProviderInProviderInclude($path, $provider)
 	{
 		$list = json_decode(file_get_contents($path));
 		$providers = $list->providers;
@@ -176,5 +177,21 @@ class RepositoryController extends Controller
 			return null;
 		}
 		return $providers->{$provider};
+	}
+
+	protected function getGuzzleConfig(string $url): array
+	{
+		$config = ['stream' => true];
+
+		// Add GitHub API token
+		if (starts_with($url, 'https://api.github.com/')) {
+			$githubUsername = config('repositories.github.api.username');
+			$githubToken = config('repositories.github.api.token');
+			if (($githubUsername !== null) && ($githubToken !== null)) {
+				$config['auth'] = [$githubUsername, $githubToken];
+			}
+		}
+
+		return $config;
 	}
 }
