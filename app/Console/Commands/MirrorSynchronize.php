@@ -114,6 +114,14 @@ class MirrorSynchronize extends Command {
 					// Download include file
 					$this->line("Downloading provider include: $includeFile");
 					$includeData = file_get_contents(sprintf('%s/%s', $repoURL, $includePath));
+
+					// Validate include data
+					$includeDataSHA256 = hash('sha256', $includeData);
+					if ($includeDataSHA256 !== $sha256) {
+						throw new \Exception('Provider include data corrupted (hash mismatch)');
+					}
+
+					// Store include file
 					file_put_contents($includeSourcePath, $includeData);
 
 					// Store model

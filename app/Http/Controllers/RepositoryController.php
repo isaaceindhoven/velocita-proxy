@@ -51,6 +51,12 @@ class RepositoryController extends Controller
 		$remoteProviderURL = config("repositories.mirrors.{$repo->name}.url") . $providerPath;
 		$providerData = file_get_contents($remoteProviderURL);
 
+		// Validate contents
+		$providerDataSHA256 = hash('sha256', $providerData);
+		if ($providerDataSHA256 !== $providerSHA256) {
+			return response('Provider data corrupted', 502);
+		}
+
 		// Store provider file in our public repo
 		$providerLocalPath = sprintf('%s/repo/%s/%s/%s.json', public_path(), $repo->name, $namespace, $package);
 		$providerLocalDir = dirname($providerLocalPath);
