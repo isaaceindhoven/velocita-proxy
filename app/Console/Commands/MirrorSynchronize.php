@@ -140,7 +140,8 @@ class MirrorSynchronize extends Command {
 		}
     }
 
-	private function writePackagesJson(Repository $repo) {
+	private function writePackagesJson(Repository $repo)
+	{
 		$this->info("Writing root {$repo->name}/packages.json");
 
 		$repoDir = sprintf('%s/repo/%s', public_path(), $repo->name);
@@ -150,10 +151,13 @@ class MirrorSynchronize extends Command {
 			'notify-batch'       => 'https://packagist.org/downloads/',
 			'search'             => 'https://packagist.org' . $repo->search_pattern,
 
+			'providers-url'      => $repo->providers_pattern,
 			'providers-lazy-url' => sprintf('/repo/%s/%%package%%.json', $repo->name),
 			'mirrors' => [
-				'dist-url'  => url(sprintf('/repo/%s', $repo->name)),
-				'preferred' => true,
+				[
+					'dist-url'  => url(sprintf('/repo/%s/dist/%%package%%/%%version%%/%%reference%%.%%type%%', $repo->name)),
+					'preferred' => true,
+				]
 			],
 		];
 		if (!is_dir($repoDir)) {
