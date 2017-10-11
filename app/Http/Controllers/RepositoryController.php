@@ -37,11 +37,9 @@ class RepositoryController extends Controller
 		$distRef->reference = $reference;
 		$distRef->type = $type;
 
-		// Determine dist URL
+		// Obtain dist URL
+		// TODO Handle proper exceptions from this call
 		$distURL = $this->distService->findDistURL($distRef);
-		if ($distURL === null) {
-			return response('Unable to find distribution location', 404);
-		}
 
 		// Create cache and immediately stream output
 		return response()
