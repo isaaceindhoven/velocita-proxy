@@ -9,7 +9,12 @@ use Illuminate\Support\Facades\Log;
 
 class RepositoryController extends Controller
 {
-    public function package($repoName, $namespace, $package)
+	public function downloadDist(string $repoName, string $namespace, string $package, string $version, string $reference, string $type)
+	{
+		return response('WIP', 500);
+	}
+
+	public function downloadPackage(string $repoName, string $namespace, string $package)
 	{
 		// Find the repository
 		$repo = Repository::where('name', $repoName)
