@@ -6,6 +6,7 @@ use App\Models\Provider;
 use App\Models\ProviderInclude;
 use App\Models\Repository;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class MirrorSynchronize extends Command {
     /**
@@ -14,7 +15,6 @@ class MirrorSynchronize extends Command {
      * @var string
      */
     protected $signature = 'mirror:synchronize';
-
     /**
      * The console command description.
      *
@@ -22,26 +22,18 @@ class MirrorSynchronize extends Command {
      */
     protected $description = 'Synchronize all repositories';
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle() {
+	/**
+	 * Execute the console command.
+	 *
+	 * @return mixed
+	 */
+	public function handle()
+	{
 		$this->synchronizeRepositories();
 	}
 
 	private function synchronizeRepositories() {
-		$baseSourceDir = storage_path() . '/app/mirrors';
+		$baseSourceDir = storage_path('app/mirrors');
 
 		$repositories = config('repositories.mirrors');
 		foreach ($repositories as $repoName => $repoConfig) {
@@ -138,8 +130,13 @@ class MirrorSynchronize extends Command {
 			}
 
 			// Delete includes we've not seen
-			ProviderInclude::whereNotIn('pattern', $patternsSeen)
-				->delete();
+			$deleteIncludes = ProviderInclude::whereNotIn('pattern', $patternsSeen)->get();
+			foreach ($deleteIncludes as $providerInclude) {
+				DB::transaction(function () use ($providerInclude) {
+					$providerInclude->providers()->delete();
+					$providerInclude->delete();
+				});
+			}
 
 			// TODO: process includes to update
 
