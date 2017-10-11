@@ -2,100 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Composer\DistReference;
 use App\Models\Provider;
 use App\Models\Repository;
-use Composer\Semver\VersionParser;
-use GuzzleHttp\Client as HttpClient;
+use App\Services\DistService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class RepositoryController extends Controller
 {
-	public function downloadDist(string $repoName, string $namespace, string $package, string $version, string $reference, string $type)
+	/** @var App\Services\DistService */
+	protected $distService;
+
+	public function __construct(DistService $distService)
+	{
+		$this->distService = $distService;
+	}
+
+	/**
+	 * @return Symfony\Component\HttpFoundation\Response
+	 */
+	public function downloadDist(string $repoName, string $namespace, string $package, string $version, string $reference, string $type): Response
 	{
 		// Find the repository
-		$repo = Repository::where('name', $repoName)
-			->first();
-		if ($repo === null) {
-			return response('Repository not found', 404);
+		$repo = Repository::where('name', $repoName)->firstOrFail();
+
+		// Create reference from arguments
+		$distRef = new DistReference();
+		$distRef->repository = $repo;
+		$distRef->namespace = $namespace;
+		$distRef->package = $package;
+		$distRef->version = $version;
+		$distRef->reference = $reference;
+		$distRef->type = $type;
+
+		// Determine dist URL
+		$distURL = $this->distService->findDistURL($distRef);
+		if ($distURL === null) {
+			return response('Unable to find distribution location', 404);
 		}
 
-		// Locate the provider file
-		$packageName = sprintf('%s/%s', $namespace, $package);
-		$providerPath = sprintf('%s/repo/%s/pack/%s.json', public_path(), $repo->name, $packageName);
-		if (!is_readable($providerPath)) {
-			return response('Unknown provider', 404);
-		}
-
-		// Parse provider data
-		$providerData = json_decode(file_get_contents($providerPath));
-
-		// Find data for the requested package
-		if (!isset($providerData->packages->{$packageName})) {
-			throw new \Exception('Missing package in provider file');
-		}
-		$packageData = $providerData->packages->{$packageName};
-
-		// Iterate over available versions and select one with a matching version property
-		$matchingVersion = null;
-		$versionParser = new VersionParser();
-		foreach ($packageData as $versionKey => $versionData) {
-			// Obtain normalized version
-			if (isset($versionData->version_normalized)) {
-				$currentVersion = $versionData->version_normalized;
-			} else if (isset($versionData->version)) {
-				$currentVersion = $versionParser->normalize($versionData->version);
-			} else {
-				Log::warning("No version information available for $packageName at key $versionKey");
-				continue;
-			}
-
-			// Is this a match?
-			if ($currentVersion === $version) {
-				$matchingVersion = $versionData;
-				break;
-			}
-		}
-		if ($matchingVersion === null) {
-			return response('Unknown version', 404);
-		}
-
-		// Confirm that dist info matches requested reference and type
-		$distData = $matchingVersion->dist;
-		if (($distData->reference !== $reference) || ($distData->type !== $type)) {
-			return response('Unknown dist for this version', 404);
-		}
-
-		// Prepare download
-		$distURL = $distData->url;
-		$distLocalPath = sprintf('%s/repo/%s/dist/%s/%s-%s.%s', public_path(), $repo->name, $packageName, $version, $reference, $type);
-		$distLocalDir = dirname($distLocalPath);
-		if (!is_dir($distLocalDir)) {
-			mkdir($distLocalDir, 0750, true);
-		}
-
-		// Download dist and stream to output immediately
-		$requestConfig = $this->getGuzzleConfig($distURL);
-		$storeAndOutput = function () use ($distURL, $distLocalPath, $requestConfig) {
-			$client = new HttpClient();
-			$response = $client->request('GET', $distURL, $requestConfig);
-			$body = $response->getBody();
-
-			// TODO: write to temporary file and rename afterwards
-
-			$fpOut = fopen($distLocalPath, 'wb');
-			try {
-				while (!$body->eof()) {
-					$data = $body->read(8192);
-					fwrite($fpOut, $data);
-					echo $data;
-				}
-			} finally {
-				fclose($fpOut);
-			}
-		};
+		// Create cache and immediately stream output
 		return response()
-			->stream($storeAndOutput, 200, [
+			->stream(function () use ($distRef, $distURL) {
+				$this->distService->createDistCache($distRef, $distURL, function (string $data) {
+					echo $data;
+				});
+			}, 200, [
 				'Content-Type' => 'application/zip',
 			]);
 	}
@@ -177,21 +131,5 @@ class RepositoryController extends Controller
 			return null;
 		}
 		return $providers->{$provider};
-	}
-
-	protected function getGuzzleConfig(string $url): array
-	{
-		$config = ['stream' => true];
-
-		// Add GitHub API token
-		if (starts_with($url, 'https://api.github.com/')) {
-			$githubUsername = config('repositories.github.api.username');
-			$githubToken = config('repositories.github.api.token');
-			if (($githubUsername !== null) && ($githubToken !== null)) {
-				$config['auth'] = [$githubUsername, $githubToken];
-			}
-		}
-
-		return $config;
 	}
 }
