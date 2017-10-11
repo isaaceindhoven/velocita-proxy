@@ -6,7 +6,8 @@
 	"require": {
 		"php": ">=7",
 		"ext-hash": "*",
-		"fideloper/proxy": "~3.3",
+		"composer/semver": "~1.4.2",
+		"guzzlehttp/guzzle": "~6.3.0",
 		"laravel/framework": "~5.5.14",
 		"laravel/tinker": "~1.0"
 	},
