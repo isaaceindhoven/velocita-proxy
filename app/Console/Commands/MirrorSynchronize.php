@@ -148,7 +148,7 @@ class MirrorSynchronize extends Command {
 		}
     }
 
-	private function writePackagesJson(Repository $repo)
+	protected function writePackagesJson(Repository $repo)
 	{
 		$this->info("Writing root {$repo->name}/packages.json");
 

@@ -76,7 +76,7 @@ class RepositoryController extends Controller
 
 		// Download dist and stream to output immediately
 		$requestConfig = $this->getGuzzleConfig($distURL);
-		$storeAndOutput = function() use ($distURL, $distLocalPath, $requestConfig) {
+		$storeAndOutput = function () use ($distURL, $distLocalPath, $requestConfig) {
 			$client = new HttpClient();
 			$response = $client->request('GET', $distURL, $requestConfig);
 			$body = $response->getBody();
