@@ -19,7 +19,7 @@ class ProviderService
 		$repo = $providerRef->repository;
 		$providerName = $providerRef->getName();
 
-		Log::debug("Creating provider cache", ['repo' => $repo->id, 'provider' => $providerName, 'sha256' => $providerRef->sha256]);
+		Log::debug('Creating provider cache', ['repo' => $repo->name, 'provider' => $providerName, 'sha256' => $providerRef->sha256]);
 
 		// Download provider file
 		$providerPath = str_replace(['%package%', '%hash%'], [$providerName, $providerRef->sha256], $repo->providers_pattern);

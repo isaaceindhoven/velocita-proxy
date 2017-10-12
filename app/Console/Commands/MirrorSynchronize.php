@@ -54,7 +54,7 @@ class MirrorSynchronize extends Command
 
 		$repositories = config('repositories.mirrors');
 		foreach ($repositories as $repoName => $repoConfig) {
-			$this->info("Synchronizing repository: $repoName");
+			Log::info('Synchronizing repository', ['repo' => $repoName]);
 
 			// Create source dir
 			$repoSourceDir = sprintf('%s/%s', $baseSourceDir, $repoName);
@@ -128,7 +128,7 @@ class MirrorSynchronize extends Command
 				}
 
 				// Download include file
-				$this->line("Downloading provider include: $includeFile");
+				Log::debug('Downloading provider include', ['repo' => $repo->name, 'file' => $includeFile]);
 				$includeData = file_get_contents(sprintf('%s/%s', $repoURL, $includePath));
 
 				// Validate include data
@@ -166,7 +166,7 @@ class MirrorSynchronize extends Command
 			// Delete old provider include files
 			foreach ($deleteIncludePaths as $deletePath) {
 				if (file_exists($deletePath)) {
-					Log::debug("Deleting old include file", ['path' => $deletePath]);
+					Log::debug("Deleting old include file", ['repo' => $repo->name, 'file' => basename($deletePath)]);
 					unlink($deletePath);
 				}
 			}
@@ -193,7 +193,7 @@ class MirrorSynchronize extends Command
 
 	protected function writePackagesJson(Repository $repo)
 	{
-		$this->info("Writing root {$repo->name}/packages.json");
+		Log::debug('Writing repository packages.json', ['repo' => $repo->name]);
 
 		$repoDir = sprintf('%s/repo/%s', public_path(), $repo->name);
 		$rootJsonPath = $repoDir . '/packages.json';
