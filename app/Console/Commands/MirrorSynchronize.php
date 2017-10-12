@@ -2,26 +2,41 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Provider;
+use App\Composer\ProviderReference;
 use App\Models\ProviderInclude;
 use App\Models\Repository;
+use App\Services\ProviderService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class MirrorSynchronize extends Command {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'mirror:synchronize';
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Synchronize all repositories';
+class MirrorSynchronize extends Command
+{
+	/**
+	 * The name and signature of the console command.
+	 *
+	 * @var string
+	 */
+	protected $signature = 'mirror:synchronize';
+
+	/**
+	 * The console command description.
+	 *
+	 * @var string
+	 */
+	protected $description = 'Synchronize all repositories';
+
+	/**
+	 * @var \App\Services\ProviderService
+	 */
+	protected $providerService;
+
+	public function __construct(ProviderService $providerService)
+	{
+		parent::__construct();
+
+		$this->providerService = $providerService;
+	}
 
 	/**
 	 * Execute the console command.
@@ -33,7 +48,8 @@ class MirrorSynchronize extends Command {
 		$this->synchronizeRepositories();
 	}
 
-	private function synchronizeRepositories() {
+	protected function synchronizeRepositories()
+	{
 		$baseSourceDir = storage_path('app/mirrors');
 
 		$repositories = config('repositories.mirrors');
@@ -67,9 +83,9 @@ class MirrorSynchronize extends Command {
 			// TODO: interpret packages key
 
 			// Keep track of includes to update and delete
-			$updatedProviderIncludes = [];
 			$deleteIncludePaths = [];
 			$patternsSeen = [];
+			$updateProviderReferences = [];
 			foreach ($packagesData->{'provider-includes'} as $includePattern => $includeData) {
 				$needsUpdate = false;
 				$patternsSeen[] = $includePattern;
@@ -106,23 +122,44 @@ class MirrorSynchronize extends Command {
 					$needsUpdate = true;
 				}
 
-				if ($needsUpdate) {
-					// Download include file
-					$this->line("Downloading provider include: $includeFile");
-					$includeData = file_get_contents(sprintf('%s/%s', $repoURL, $includePath));
+				// Proceed with next include if we don't need an update
+				if (!$needsUpdate) {
+					continue;
+				}
 
-					// Validate include data
-					$includeDataSHA256 = hash('sha256', $includeData);
-					if ($includeDataSHA256 !== $sha256) {
-						throw new \Exception('Provider include data corrupted (hash mismatch)');
+				// Download include file
+				$this->line("Downloading provider include: $includeFile");
+				$includeData = file_get_contents(sprintf('%s/%s', $repoURL, $includePath));
+
+				// Validate include data
+				$includeDataSHA256 = hash('sha256', $includeData);
+				if ($includeDataSHA256 !== $sha256) {
+					throw new \Exception('Provider include data corrupted (hash mismatch)');
+				}
+
+				// Store include file
+				file_put_contents($includeSourcePath, $includeData);
+
+				// Store model
+				$repo->providerIncludes()->save($providerInclude);
+
+				// Iterate over known providers, check for SHA256 updates and register providers if changed
+				$providerList = json_decode($includeData)->providers;
+				foreach ($providerInclude->providers as $provider) {
+					if (!isset($providerList->{$provider->name})) {
+						continue;
 					}
+					$providerData = $providerList->{$provider->name};
+					if ($providerData->sha256 !== $provider->sha256) {
+						$providerRef = new ProviderReference();
+						$providerRef->repository = $repo;
+						$providerRef->providerInclude = $providerInclude;
+						$providerRef->namespace = $provider->namespace;
+						$providerRef->package = $provider->package;
+						$providerRef->sha256 = $providerData->sha256;
 
-					// Store include file
-					file_put_contents($includeSourcePath, $includeData);
-
-					// Store model
-					$repo->providerIncludes()->save($providerInclude);
-					$updatedProviderIncludes[] = $providerInclude;
+						$updateProviderReferences[] = $providerRef;
+					}
 				}
 			}
 
@@ -138,12 +175,16 @@ class MirrorSynchronize extends Command {
 			$deleteIncludes = ProviderInclude::whereNotIn('pattern', $patternsSeen)->get();
 			foreach ($deleteIncludes as $providerInclude) {
 				DB::transaction(function () use ($providerInclude) {
+					// TODO: don't delete
 					$providerInclude->providers()->delete();
 					$providerInclude->delete();
 				});
 			}
 
-			// TODO: process includes to update
+			// Update provider caches
+			foreach ($updateProviderReferences as $providerRef) {
+				$this->providerService->createProviderCache($providerRef);
+			}
 
 			// Write packages.json
 			$this->writePackagesJson($repo);
@@ -158,6 +199,7 @@ class MirrorSynchronize extends Command {
 		$rootJsonPath = $repoDir . '/packages.json';
 		$rootJson = [
 			// TODO: are these necessary?
+			// TODO: configure
 			'notify-batch'       => 'https://packagist.org/downloads/',
 			'search'             => 'https://packagist.org' . $repo->search_pattern,
 

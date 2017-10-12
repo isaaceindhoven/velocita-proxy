@@ -6,6 +6,7 @@ use App\Composer\ProviderReference;
 use App\Models\Provider;
 use App\Models\ProviderInclude;
 use App\Models\Repository;
+use Illuminate\Support\Facades\Log;
 
 class ProviderService
 {
@@ -17,6 +18,8 @@ class ProviderService
 	{
 		$repo = $providerRef->repository;
 		$providerName = $providerRef->getName();
+
+		Log::debug("Creating provider cache", ['repo' => $repo->id, 'provider' => $providerName, 'sha256' => $providerRef->sha256]);
 
 		// Download provider file
 		$providerPath = str_replace(['%package%', '%hash%'], [$providerName, $providerRef->sha256], $repo->providers_pattern);
@@ -39,11 +42,13 @@ class ProviderService
 
 		// Register provider model
 		$provider = $repo->providers()
-			->where('name', $providerName)
+			->where('namespace', $providerRef->namespace)
+			->where('package', $providerRef->package)
 			->first();
 		if ($provider === null) {
 			$provider = new Provider();
-			$provider->name = $providerName;
+			$provider->namespace = $providerRef->namespace;
+			$provider->package = $providerRef->package;
 			$provider->repository()->associate($repo);
 		}
 		$provider->providerInclude()->associate($providerRef->providerInclude);

@@ -38,11 +38,12 @@ class InitialDatabase extends Migration {
 			$table->bigIncrements('id');
 			$table->bigInteger('repository_id')->unsigned();
 			$table->bigInteger('provider_include_id')->unsigned()->nullable();
-			$table->text('name');
+			$table->text('namespace');
+			$table->text('package');
 			$table->string('sha256', 64);
 			$table->timestamps();
 
-			$table->unique(['repository_id', 'name']);
+			$table->unique(['repository_id', 'namespace', 'package']);
 
 			$table->foreign('repository_id')->references('id')->on('repositories');
 			$table->foreign('provider_include_id')->references('id')->on('provider_includes');
