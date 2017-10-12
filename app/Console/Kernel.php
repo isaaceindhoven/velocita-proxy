@@ -21,8 +21,10 @@ class Kernel extends ConsoleKernel {
      * @return void
      */
     protected function schedule(Schedule $schedule) {
-        // $schedule->command('inspire')
-        //          ->hourly();
+		// Synchronize all repositories every 15 minutes
+		$schedule->command('mirror:synchronize')
+			->everyFifteenMinutes()
+			->withoutOverlapping();
     }
 
     /**
