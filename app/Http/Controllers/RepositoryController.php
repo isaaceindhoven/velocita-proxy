@@ -6,24 +6,29 @@ use App\Composer\DistReference;
 use App\Models\Repository;
 use App\Services\DistService;
 use App\Services\ProviderService;
+use App\Services\RepositoryService;
 use Symfony\Component\HttpFoundation\Response;
 
 class RepositoryController extends Controller
 {
-	/** @var App\Services\DistService */
+	/** @var \App\Services\DistService */
 	protected $distService;
 
-	/** @var App\Services\ProviderService */
+	/** @var \App\Services\ProviderService */
 	protected $providerService;
 
-	public function __construct(DistService $distService, ProviderService $providerService)
+	/** @var \App\Services\RepositoryService */
+	protected $repositoryService;
+
+	public function __construct(DistService $distService, ProviderService $providerService, RepositoryService $repositoryService)
 	{
 		$this->distService = $distService;
 		$this->providerService = $providerService;
+		$this->repositoryService = $repositoryService;
 	}
 
 	/**
-	 * @return Symfony\Component\HttpFoundation\Response
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	public function downloadDist(string $repoName, string $namespace, string $package, string $version, string $reference, string $type): Response
 	{
@@ -49,13 +54,11 @@ class RepositoryController extends Controller
 				$this->distService->createDistCache($distRef, $distURL, function (string $data) {
 					echo $data;
 				});
-			}, 200, [
-				'Content-Type' => 'application/zip',
-			]);
+			}, 200, ['Content-Type' => 'application/zip']);
 	}
 
 	/**
-	 * @return Symfony\Component\HttpFoundation\Response
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	public function downloadPackage(string $repoName, string $namespace, string $package): Response
 	{
@@ -71,11 +74,23 @@ class RepositoryController extends Controller
 		// Create cache and immediately return contents
 		return response()
 			->stream(function () use ($providerRef) {
-				$this->providerService->createProviderCache($providerRef, function ($data) {
+				$this->providerService->createProviderCache($providerRef, function (string $data) {
 					echo $data;
 				});
-			}, 200, [
-				'Content-Type' => 'application/json',
-			]);
+			}, 200, ['Content-Type' => 'application/json']);
+	}
+
+	/**
+	 * @return Symfony\Component\HttpFoundation\Response
+	 */
+	public function rootPackages(string $repoName): Response
+	{
+		$repo = Repository::where('name', $repoName)->firstOrFail();
+		return response()
+			->stream(function () use ($repo) {
+				$this->repositoryService->createRootPackagesFile($repo, function (string $data) {
+					echo $data;
+				});
+			}, 200, ['Content-Type' => 'application/json']);
 	}
 }

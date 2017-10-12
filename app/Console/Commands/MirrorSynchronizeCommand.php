@@ -76,6 +76,7 @@ class MirrorSynchronizeCommand extends Command
 			$repo->search_pattern = $packagesData->search;
 			$repo->save();
 
+			// TODO: invalidate packages.json on repo model update
 			// TODO: interpret packages key
 
 			// Keep track of includes to update and delete
@@ -181,36 +182,6 @@ class MirrorSynchronizeCommand extends Command
 			foreach ($updateProviderReferences as $providerRef) {
 				$this->providerService->createProviderCache($providerRef);
 			}
-
-			// Write packages.json
-			$this->writePackagesJson($repo);
 		}
     }
-
-	/**
-	 * @param \App\Models\Repository $repo
-	 */
-	protected function writePackagesJson(Repository $repo)
-	{
-		Log::debug('Writing repository packages.json', ['repo' => $repo->name]);
-
-		$rootJson = [
-			// TODO: are these necessary?
-			// TODO: configure
-			'notify-batch'       => 'https://packagist.org/downloads/',
-			'search'             => 'https://packagist.org' . $repo->search_pattern,
-
-			'providers-url'      => $repo->providers_pattern,
-			'providers-lazy-url' => sprintf('/repo/%s/pack/%%package%%.json', $repo->name),
-			'mirrors' => [
-				[
-					'dist-url'  => url(sprintf('/repo/%s/dist/%%package%%/%%version%%-%%reference%%.%%type%%', $repo->name)),
-					'preferred' => true,
-				]
-			],
-		];
-
-		$storage = Storage::disk('local');
-		$storage->put(sprintf('repo/%s/packages.json', $repo->name), json_encode($rootJson));
-	}
 }
