@@ -9,6 +9,7 @@ use App\Services\ProviderService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class MirrorSynchronizeCommand extends Command
 {
@@ -50,24 +51,19 @@ class MirrorSynchronizeCommand extends Command
 
 	protected function synchronizeRepositories()
 	{
-		$baseSourceDir = storage_path('app/mirrors');
-
+		$storage = Storage::disk('local');
 		$repositories = config('repositories.mirrors');
+
 		foreach ($repositories as $repoName => $repoConfig) {
 			Log::info('Synchronizing repository', ['repo' => $repoName]);
-
-			// Create source dir
-			$repoSourceDir = sprintf('%s/%s', $baseSourceDir, $repoName);
-			if (!is_dir($repoSourceDir)) {
-				mkdir($repoSourceDir, 0750, true);
-			}
 
 			$repoURL = config("repositories.mirrors.$repoName.url");
 			$packagesFile = 'packages.json';
 			$packagesURL = sprintf('%s/%s', $repoURL, $packagesFile);
 
 			$packagesData = file_get_contents($packagesURL);
-			file_put_contents(sprintf('%s/%s', $repoSourceDir, $packagesFile), $packagesData);
+			$storage->put(sprintf('mirrors/%s/%s', $repoName, $packagesFile), $packagesData);
+
 			$packagesData = json_decode($packagesData);
 
 			// Sync repo model
@@ -83,7 +79,7 @@ class MirrorSynchronizeCommand extends Command
 			// TODO: interpret packages key
 
 			// Keep track of includes to update and delete
-			$deleteIncludePaths = [];
+			$deleteIncludeFiles = [];
 			$patternsSeen = [];
 			$updateProviderReferences = [];
 			foreach ($packagesData->{'provider-includes'} as $includePattern => $includeData) {
@@ -106,8 +102,7 @@ class MirrorSynchronizeCommand extends Command
 					// Mark old file for deletion
 					if ($providerInclude->exists) {
 						$includePath = str_replace('%hash%', $providerInclude->sha256, $includePattern);
-						$oldIncludeFile = basename($includePath);
-						$deleteIncludePaths[] = sprintf('%s/%s', $repoSourceDir, $oldIncludeFile);
+						$deleteIncludeFiles[] = basename($includePath);
 					}
 
 					$providerInclude->sha256 = $sha256;
@@ -117,8 +112,8 @@ class MirrorSynchronizeCommand extends Command
 				// Check if we have a local copy of this file
 				$includePath = str_replace('%hash%', $sha256, $includePattern);
 				$includeFile = basename($includePath);
-				$includeSourcePath = sprintf('%s/%s', $repoSourceDir, $includeFile);
-				if (!is_readable($includeSourcePath)) {
+				$includeSourcePath = sprintf('mirrors/%s/%s', $repoName, $includeFile);
+				if (!$storage->has($includeSourcePath)) {
 					$needsUpdate = true;
 				}
 
@@ -138,7 +133,7 @@ class MirrorSynchronizeCommand extends Command
 				}
 
 				// Store include file
-				file_put_contents($includeSourcePath, $includeData);
+				$storage->put($includeSourcePath, $includeData);
 
 				// Store model
 				$repo->providerIncludes()->save($providerInclude);
@@ -164,10 +159,11 @@ class MirrorSynchronizeCommand extends Command
 			}
 
 			// Delete old provider include files
-			foreach ($deleteIncludePaths as $deletePath) {
-				if (file_exists($deletePath)) {
-					Log::debug("Deleting old include file", ['repo' => $repo->name, 'file' => basename($deletePath)]);
-					unlink($deletePath);
+			foreach ($deleteIncludeFiles as $deleteFile) {
+				$storagePath = sprintf('mirrors/%s/%s', $repo->name, $deleteFile);
+				if ($storage->has($storagePath)) {
+					Log::debug("Deleting old include file", ['repo' => $repo->name, 'file' => $deleteFile]);
+					$storage->delete($storagePath);
 				}
 			}
 
@@ -191,12 +187,13 @@ class MirrorSynchronizeCommand extends Command
 		}
     }
 
+	/**
+	 * @param \App\Models\Repository $repo
+	 */
 	protected function writePackagesJson(Repository $repo)
 	{
 		Log::debug('Writing repository packages.json', ['repo' => $repo->name]);
 
-		$repoDir = storage_path(sprintf('app/repo/%s', $repo->name));
-		$rootJsonPath = $repoDir . '/packages.json';
 		$rootJson = [
 			// TODO: are these necessary?
 			// TODO: configure
@@ -212,9 +209,8 @@ class MirrorSynchronizeCommand extends Command
 				]
 			],
 		];
-		if (!is_dir($repoDir)) {
-			mkdir($repoDir, 0750, true);
-		}
-		file_put_contents($rootJsonPath, json_encode($rootJson));
+
+		$storage = Storage::disk('local');
+		$storage->put(sprintf('repo/%s/packages.json', $repo->name), json_encode($rootJson));
 	}
 }

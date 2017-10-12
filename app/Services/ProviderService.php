@@ -7,6 +7,7 @@ use App\Models\Provider;
 use App\Models\ProviderInclude;
 use App\Models\Repository;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProviderService
 {
@@ -33,12 +34,8 @@ class ProviderService
 		}
 
 		// Store provider file in our public repo
-		$providerLocalPath = storage_path(sprintf('app/repo/%s/pack/%s.json', $repo->name, $providerName));
-		$providerLocalDir = dirname($providerLocalPath);
-		if (!is_dir($providerLocalDir)) {
-			mkdir($providerLocalDir, 0750, true);
-		}
-		file_put_contents($providerLocalPath, $providerData);
+		$storage = Storage::disk('local');
+		$storage->put(sprintf('repo/%s/pack/%s.json', $repo->name, $providerName), $providerData);
 
 		// Register provider model
 		$provider = $repo->providers()
@@ -57,7 +54,7 @@ class ProviderService
 
 		// Invoke data callback
 		if ($dataCallback) {
-			$dataCallback(file_get_contents($providerLocalPath));
+			$dataCallback($providerData);
 		}
 	}
 
@@ -69,10 +66,12 @@ class ProviderService
 		// Construct path to local provider include file
 		$includeFile = str_replace('%hash%', $providerInclude->sha256, $providerInclude->pattern);
 		$includeFile = basename($includeFile);
-		$includePath = storage_path(sprintf('app/mirrors/%s/%s', $repo->name, $includeFile));
+
+		// Load provider data
+		$storage = Storage::disk('local');
+		$list = json_decode($storage->read(sprintf('mirrors/%s/%s', $repo->name, $includeFile)));
 
 		// Find provider entry
-		$list = json_decode(file_get_contents($includePath));
 		$providers = $list->providers;
 		$providerName = sprintf('%s/%s', $namespace, $package);
 		if (!isset($providers->{$providerName})) {

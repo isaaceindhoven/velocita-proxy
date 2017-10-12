@@ -7,6 +7,7 @@ use App\Models\Repository;
 use Composer\Semver\VersionParser;
 use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class DistService
 {
@@ -19,13 +20,6 @@ class DistService
 
 		Log::debug('Creating dist cache', ['repo' => $repo->name, 'package' => $packageName, 'version' => $distRef->version, 'ref' => $distRef->reference, 'type' => $distRef->type]);
 
-		// Construct local path
-		$distLocalPath = storage_path(sprintf('app/repo/%s/dist/%s/%s-%s.%s', $repo->name, $packageName, $distRef->version, $distRef->reference, $distRef->type));
-		$distLocalDir = dirname($distLocalPath);
-		if (!is_dir($distLocalDir)) {
-			mkdir($distLocalDir, 0750, true);
-		}
-
 		// Start the download and invoke the data callback on each chunk
 		$client = new HttpClient();
 
@@ -33,24 +27,26 @@ class DistService
 		$response = $client->request('GET', $distURL, $requestConfig);
 		$body = $response->getBody();
 
-		// TODO: write to temporary file and rename afterwards
-
-		$fpOut = fopen($distLocalPath, 'wb');
+		$storage = Storage::disk('local');
+		$tmpOut = tmpfile();
 		try {
 			while (!$body->eof()) {
-				// Read data from origin
+				// Stream data to tmpfile
 				$data = $body->read(self::DOWNLOAD_CHUNK_SIZE);
-
-				// Write data to local cache
-				fwrite($fpOut, $data);
+				fwrite($tmpOut, $data);
 
 				// Invoke data callback
 				if ($dataCallback) {
 					$dataCallback($data);
 				}
 			}
+
+			// Stream tmp contents to target file
+			rewind($tmpOut);
+			$targetPath = sprintf('repo/%s/dist/%s/%s-%s.%s', $repo->name, $packageName, $distRef->version, $distRef->reference, $distRef->type);
+			$storage->putStream($targetPath, $tmpOut);
 		} finally {
-			fclose($fpOut);
+			fclose($tmpOut);
 		}
 	}
 
@@ -61,15 +57,10 @@ class DistService
 	{
 		$repo = $distRef->repository;
 
-		// Locate the provider file
+		// Load the provider file
 		$packageName = sprintf('%s/%s', $distRef->namespace, $distRef->package);
-		$providerPath = storage_path(sprintf('app/repo/%s/pack/%s.json', $repo->name, $packageName));
-		if (!is_readable($providerPath)) {
-			throw new \Exception('Missing provider file');
-		}
-
-		// Parse provider data
-		$providerData = json_decode(file_get_contents($providerPath));
+		$storage = Storage::disk('local');
+		$providerData = json_decode($storage->read(sprintf('repo/%s/pack/%s.json', $repo->name, $packageName)));
 
 		// Find data for the requested package
 		if (!isset($providerData->packages->{$packageName})) {
