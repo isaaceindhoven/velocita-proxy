@@ -3,6 +3,12 @@
 	"description": "Velocita - composer caching proxy",
 	"license": "MIT",
 	"type": "project",
+	"authors": [
+		{
+			"name": "Jelle Raaijmakers",
+			"email": "jelle.raaijmakers@isaac.nl"
+		}
+	],
 	"require": {
 		"php": ">=7",
 		"ext-hash": "*",
