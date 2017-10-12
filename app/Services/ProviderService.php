@@ -33,7 +33,7 @@ class ProviderService
 		}
 
 		// Store provider file in our public repo
-		$providerLocalPath = public_path(sprintf('repo/%s/pack/%s.json', $repo->name, $providerName));
+		$providerLocalPath = storage_path(sprintf('app/repo/%s/pack/%s.json', $repo->name, $providerName));
 		$providerLocalDir = dirname($providerLocalPath);
 		if (!is_dir($providerLocalDir)) {
 			mkdir($providerLocalDir, 0750, true);

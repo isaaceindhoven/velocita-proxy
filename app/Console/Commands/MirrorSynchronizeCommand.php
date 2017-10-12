@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class MirrorSynchronize extends Command
+class MirrorSynchronizeCommand extends Command
 {
 	/**
 	 * The name and signature of the console command.
@@ -195,7 +195,7 @@ class MirrorSynchronize extends Command
 	{
 		Log::debug('Writing repository packages.json', ['repo' => $repo->name]);
 
-		$repoDir = sprintf('%s/repo/%s', public_path(), $repo->name);
+		$repoDir = storage_path(sprintf('app/repo/%s', $repo->name));
 		$rootJsonPath = $repoDir . '/packages.json';
 		$rootJson = [
 			// TODO: are these necessary?

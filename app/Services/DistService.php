@@ -20,7 +20,7 @@ class DistService
 		Log::debug('Creating dist cache', ['repo' => $repo->name, 'package' => $packageName, 'version' => $distRef->version, 'ref' => $distRef->reference, 'type' => $distRef->type]);
 
 		// Construct local path
-		$distLocalPath = public_path(sprintf('repo/%s/dist/%s/%s-%s.%s', $repo->name, $packageName, $distRef->version, $distRef->reference, $distRef->type));
+		$distLocalPath = storage_path(sprintf('app/repo/%s/dist/%s/%s-%s.%s', $repo->name, $packageName, $distRef->version, $distRef->reference, $distRef->type));
 		$distLocalDir = dirname($distLocalPath);
 		if (!is_dir($distLocalDir)) {
 			mkdir($distLocalDir, 0750, true);
@@ -63,7 +63,7 @@ class DistService
 
 		// Locate the provider file
 		$packageName = sprintf('%s/%s', $distRef->namespace, $distRef->package);
-		$providerPath = public_path(sprintf('repo/%s/pack/%s.json', $repo->name, $packageName));
+		$providerPath = storage_path(sprintf('app/repo/%s/pack/%s.json', $repo->name, $packageName));
 		if (!is_readable($providerPath)) {
 			throw new \Exception('Missing provider file');
 		}
