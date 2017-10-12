@@ -7,6 +7,7 @@ use App\Models\ProviderInclude;
 use App\Models\Repository;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MirrorSynchronize extends Command {
     /**
@@ -86,9 +87,12 @@ class MirrorSynchronize extends Command {
 				// Check if SHA256 was updated
 				$sha256 = $includeData->sha256;
 				if ($providerInclude->sha256 !== $sha256) {
-					$includePath = str_replace('%hash%', $providerInclude->sha256, $includePattern);
-					$oldIncludeFile = basename($includePath);
-					$deleteIncludePaths[] = sprintf('%s/%s', $repoSourceDir, $oldIncludeFile);
+					// Mark old file for deletion
+					if ($providerInclude->exists) {
+						$includePath = str_replace('%hash%', $providerInclude->sha256, $includePattern);
+						$oldIncludeFile = basename($includePath);
+						$deleteIncludePaths[] = sprintf('%s/%s', $repoSourceDir, $oldIncludeFile);
+					}
 
 					$providerInclude->sha256 = $sha256;
 					$needsUpdate = true;
@@ -124,9 +128,10 @@ class MirrorSynchronize extends Command {
 
 			// Delete old provider include files
 			foreach ($deleteIncludePaths as $deletePath) {
-				$deleteFile = basename($deletePath);
-				$this->line("Deleting old provider include: $deleteFile");
-				unlink($deletePath);
+				if (file_exists($deletePath)) {
+					Log::debug("Deleting old include file", ['path' => $deletePath]);
+					unlink($deletePath);
+				}
 			}
 
 			// Delete includes we've not seen
