@@ -14,9 +14,12 @@ class DistService
 
 	public function createDistCache(DistReference $distRef, string $distURL, \Closure $dataCallback = null)
 	{
-		// Construct local path
 		$repo = $distRef->repository;
 		$packageName = sprintf('%s/%s', $distRef->namespace, $distRef->package);
+
+		Log::debug('Creating dist cache', ['repo' => $repo->name, 'package' => $packageName, 'version' => $distRef->version, 'ref' => $distRef->reference, 'type' => $distRef->type]);
+
+		// Construct local path
 		$distLocalPath = public_path(sprintf('repo/%s/dist/%s/%s-%s.%s', $repo->name, $packageName, $distRef->version, $distRef->reference, $distRef->type));
 		$distLocalDir = dirname($distLocalPath);
 		if (!is_dir($distLocalDir)) {
