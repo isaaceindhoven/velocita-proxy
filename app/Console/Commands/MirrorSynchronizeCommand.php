@@ -73,7 +73,6 @@ class MirrorSynchronizeCommand extends Command
 				$repo->name = $repoName;
 			}
 			$repo->providers_pattern = $packagesData->{'providers-url'};
-			$repo->search_pattern = $packagesData->search;
 			$repo->save();
 
 			// TODO: invalidate packages.json on repo model update

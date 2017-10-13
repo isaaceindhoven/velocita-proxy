@@ -4,23 +4,23 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class InitialDatabase extends Migration {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
-    {
-        Schema::create('repositories', function(Blueprint $table) {
-            $table->bigIncrements('id');
+class InitialDatabase extends Migration
+{
+	/**
+	 * Run the migrations.
+	 *
+	 * @return void
+	 */
+	public function up()
+	{
+		Schema::create('repositories', function(Blueprint $table) {
+			$table->bigIncrements('id');
 			$table->string('name', 200);
 			$table->text('providers_pattern');
-			$table->text('search_pattern');
-            $table->timestamps();
+			$table->timestamps();
 
 			$table->unique('name');
-        });
+		});
 
 		Schema::create('provider_includes', function(Blueprint $table) {
 			$table->bigIncrements('id');
@@ -48,16 +48,17 @@ class InitialDatabase extends Migration {
 			$table->foreign('repository_id')->references('id')->on('repositories');
 			$table->foreign('provider_include_id')->references('id')->on('provider_includes');
 		});
-    }
+	}
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down() {
-        Schema::dropIfExists('providers');
-        Schema::dropIfExists('provider_includes');
-        Schema::dropIfExists('repositories');
-    }
+	/**
+	 * Reverse the migrations.
+	 *
+	 * @return void
+	 */
+	public function down()
+	{
+		Schema::dropIfExists('providers');
+		Schema::dropIfExists('provider_includes');
+		Schema::dropIfExists('repositories');
+	}
 }

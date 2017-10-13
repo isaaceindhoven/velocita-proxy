@@ -16,11 +16,10 @@ class RepositoryService
 	{
 		Log::debug('Writing repository packages.json', ['repo' => $repo->name]);
 
-		$rootJson = [
-			// TODO: are these necessary?
-			// TODO: configure
+		$rootJson = json_encode([
+			// TODO: hardcoded right now - best practices around notify-batch, how to deal with
+			//       when sourcing multiple origins?
 			'notify-batch'       => 'https://packagist.org/downloads/',
-			'search'             => 'https://packagist.org' . $repo->search_pattern,
 
 			'providers-url'      => $repo->providers_pattern,
 			'providers-lazy-url' => sprintf('/repo/%s/pack/%%package%%.json', $repo->name),
@@ -30,8 +29,7 @@ class RepositoryService
 					'preferred' => true,
 				]
 			],
-		];
-		$rootJson = json_encode($rootJson);
+		]);
 
 		$storage = Storage::disk('local');
 		$storage->put(sprintf('repo/%s/packages.json', $repo->name), $rootJson);
