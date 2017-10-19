@@ -10,7 +10,7 @@
 		}
 	],
 	"require": {
-		"php": ">=7",
+		"php": ">=7.1",
 		"ext-hash": "*",
 		"composer/semver": "~1.4.2",
 		"guzzlehttp/guzzle": "~6.3.0",
