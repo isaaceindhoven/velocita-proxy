@@ -2,7 +2,7 @@
 
 return [
 	'mirrors' => [
-		'packagist' => [
+		'cache' => [
 			'url' => env('PACKAGIST_URL', 'https://packagist.org'),
 		],
 	],
