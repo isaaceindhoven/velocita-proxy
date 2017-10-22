@@ -112,11 +112,13 @@ class DistService
     {
         $config = ['stream' => true];
 
-        // Add GitHub API token if applicable
+        // Add GitHub API token if configured and applicable
         if (starts_with($url, 'https://api.github.com/')) {
             $githubUsername = config('repositories.github.api.username');
             $githubToken = config('repositories.github.api.token');
+
             if (($githubUsername !== null) && ($githubToken !== null)) {
+                Log::debug('Performing authenticated GitHub API request');
                 $config['auth'] = [$githubUsername, $githubToken];
             }
         }
