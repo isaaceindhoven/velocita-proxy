@@ -2,31 +2,32 @@
 
 namespace App\Services;
 
-use App\Composer\DistReference;
 use App\Models\Repository;
 use Composer\Semver\VersionParser;
 use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Psr\Http\Message\ResponseInterface;
 
 class DistService
 {
     const DOWNLOAD_CHUNK_SIZE = 8 * 1024;
 
-    public function createDistCache(DistReference $distRef, string $distURL, \Closure $dataCallback = null)
+    public function createDistCache(string $site, string $path, \Closure $dataCallback = null)
     {
-        $repo = $distRef->repository;
-        $packageName = sprintf('%s/%s', $distRef->namespace, $distRef->package);
+        Log::debug('Creating dist cache', ['site' => $site, 'path' => $path]);
 
-        Log::debug('Creating dist cache', ['repo' => $repo->name, 'package' => $packageName, 'version' => $distRef->version, 'ref' => $distRef->reference, 'type' => $distRef->type]);
+        // Perform request based on type
+        switch (config("dist.$site.type")) {
+            case 'github':
+                $response = $this->performGitHubRequest($site, $path);
+                break;
+            default:
+                throw new \Exception(sprintf('Unsupported site: %s', $site));
+        }
 
         // Start the download and invoke the data callback on each chunk
-        $client = new HttpClient();
-
-        $requestConfig = $this->getGuzzleConfig($distURL);
-        $response = $client->request('GET', $distURL, $requestConfig);
         $body = $response->getBody();
-
         $storage = Storage::disk('local');
         $tmpOut = tmpfile();
         try {
@@ -43,86 +44,36 @@ class DistService
 
             // Stream tmp contents to target file
             rewind($tmpOut);
-            $targetPath = sprintf('repo/%s/dist/%s/%s-%s.%s', $repo->name, $packageName, $distRef->version, $distRef->reference, $distRef->type);
+            $targetPath = sprintf('dist/%s/%s', $site, $path);
             $storage->putStream($targetPath, $tmpOut);
         } finally {
             fclose($tmpOut);
         }
     }
 
-    /**
-     * @return string The distribution's URL
-     */
-    public function findDistURL(DistReference $distRef): string
+    protected function performGitHubRequest(string $site, string $path): ResponseInterface
     {
-        $repo = $distRef->repository;
+        $baseURL = config("dist.$site.options.baseURL");
+        $distURL = $baseURL . $path;
 
-        // Load the provider file
-        $packageName = sprintf('%s/%s', $distRef->namespace, $distRef->package);
-        $storage = Storage::disk('local');
-        $providerData = json_decode($storage->read(sprintf('repo/%s/pack/%s.json', $repo->name, $packageName)));
+        $requestConfig = $this->getDefaultGuzzleConfig();
 
-        // Find data for the requested package
-        if (!isset($providerData->packages->{$packageName})) {
-            throw new \Exception('Missing package in provider file');
-        }
-        $packageData = $providerData->packages->{$packageName};
+        $githubUsername = config("dist.$site.options.username");
+        $githubToken = config("dist.$site.options.token");
 
-        // Iterate over available versions and select one with a matching version property
-        $matchingVersion = null;
-        $versionParser = new VersionParser();
-        foreach ($packageData as $versionKey => $versionData) {
-            // Obtain normalized version
-            if (isset($versionData->version_normalized)) {
-                $currentVersion = $versionData->version_normalized;
-            } else if (isset($versionData->version)) {
-                $currentVersion = $versionParser->normalize($versionData->version);
-            } else {
-                Log::warning("No version information available for $packageName at key $versionKey");
-                continue;
-            }
-
-            // Is this a match?
-            if ($currentVersion === $distRef->version) {
-                $matchingVersion = $versionData;
-                break;
-            }
-        }
-        if ($matchingVersion === null) {
-            throw new \Exception('Unknown package version');
+        if (($githubUsername !== null) && ($githubToken !== null)) {
+            Log::debug('Performing authenticated GitHub API request');
+            $requestConfig['auth'] = [$githubUsername, $githubToken];
         }
 
-        // Confirm that dist info matches requested reference and type
-        $distData = $matchingVersion->dist;
-        if (($distData->reference !== $distRef->reference) || ($distData->type !== $distRef->type)) {
-            throw new \Exception('Found version does not match reference and/or type');
-        }
-
-        return $distData->url;
+        $client = new HttpClient();
+        return $client->request('GET', $distURL, $requestConfig);
     }
 
-    /**
-     * Creates a request configuration for the provided URL.
-     *
-     * @param string $url The URL to return request configuration for
-     *
-     * @return array Request configuration for Guzzle
-     */
-    protected function getGuzzleConfig(string $url): array
+    protected function getDefaultGuzzleConfig(): array
     {
-        $config = ['stream' => true];
-
-        // Add GitHub API token if configured and applicable
-        if (starts_with($url, 'https://api.github.com/')) {
-            $githubUsername = config('repositories.github.api.username');
-            $githubToken = config('repositories.github.api.token');
-
-            if (($githubUsername !== null) && ($githubToken !== null)) {
-                Log::debug('Performing authenticated GitHub API request');
-                $config['auth'] = [$githubUsername, $githubToken];
-            }
-        }
-
-        return $config;
+        return [
+            'stream' => true,
+        ];
     }
 }
