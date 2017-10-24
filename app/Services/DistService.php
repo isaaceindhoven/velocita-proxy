@@ -11,7 +11,9 @@ use Psr\Http\Message\ResponseInterface;
 
 class DistService
 {
-    const DOWNLOAD_CHUNK_SIZE = 8 * 1024;
+    protected const DIST_TYPE_GITHUB = 'github';
+
+    protected const DOWNLOAD_CHUNK_SIZE = 8 * 1024;
 
     public function createDistCache(string $site, string $path, \Closure $dataCallback = null)
     {
@@ -19,7 +21,7 @@ class DistService
 
         // Perform request based on type
         switch (config("dist.$site.type")) {
-            case 'github':
+            case self::DIST_TYPE_GITHUB:
                 $response = $this->performGitHubRequest($site, $path);
                 break;
             default:
