@@ -24,7 +24,7 @@ class RepositoryService
             //       when sourcing multiple origins?
             'notify-batch'       => 'https://packagist.org/downloads/',
 
-            'providers-lazy-url' => sprintf('/repo/%s/%%package%%.json', $repo->name),
+            'providers-lazy-url' => '/%%package%%.json',
         ];
         if ($includePreferredMirror) {
             $rootJson['mirrors'] = [
