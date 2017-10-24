@@ -1,9 +1,8 @@
 <?php
 
 return [
-    'mirrors' => [
-        'cache' => [
-            'url' => env('PACKAGIST_URL', 'https://packagist.org'),
-        ],
+    'packagist' => [
+        'type' => 'composer',
+        'url'  => env('PACKAGIST_URL', 'https://packagist.org'),
     ],
 ];

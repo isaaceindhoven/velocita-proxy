@@ -27,9 +27,7 @@ class MirrorsSynchronizeCommand extends Command
      */
     protected $description = 'Synchronize all repositories';
 
-    /**
-     * @var \App\Services\ProviderService
-     */
+    /** @var \App\Services\ProviderService */
     protected $providerService;
 
     public function __construct(ProviderService $providerService)
@@ -52,12 +50,12 @@ class MirrorsSynchronizeCommand extends Command
     protected function synchronizeRepositories()
     {
         $storage = Storage::disk('local');
-        $repositories = config('repositories.mirrors');
+        $repositories = config('repositories');
 
         foreach ($repositories as $repoName => $repoConfig) {
             Log::info('Synchronizing repository', ['repo' => $repoName]);
 
-            $repoURL = config("repositories.mirrors.$repoName.url");
+            $repoURL = config("repositories.$repoName.url");
             $packagesFile = 'packages.json';
             $packagesURL = sprintf('%s/%s', $repoURL, $packagesFile);
 

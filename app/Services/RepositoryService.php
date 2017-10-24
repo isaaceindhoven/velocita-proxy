@@ -8,34 +8,40 @@ use Illuminate\Support\Facades\Storage;
 
 class RepositoryService
 {
-	/**
-	 * @param \App\Models\Repository $repo
-	 * @param \Closure $dataCallback
-	 */
-	public function createRootPackagesFile(Repository $repo, \Closure $dataCallback = null)
-	{
-		Log::debug('Writing repository packages.json', ['repo' => $repo->name]);
+    /**
+     * @param \App\Models\Repository $repo
+     * @param \Closure $dataCallback
+     */
+    public function createRootPackagesFile(Repository $repo, \Closure $dataCallback = null)
+    {
+        Log::debug('Writing repository packages.json', ['repo' => $repo->name]);
 
-		$rootJson = json_encode([
-			// TODO: hardcoded right now - best practices around notify-batch, how to deal with
-			//       when sourcing multiple origins?
-			'notify-batch'       => 'https://packagist.org/downloads/',
+        // TODO Make optional based on goal (composer plugin vs. standalone)
+        $includePreferredMirror = false;
 
-			'providers-url'      => $repo->providers_pattern,
-			'providers-lazy-url' => sprintf('/repo/%s/pack/%%package%%.json', $repo->name),
-			'mirrors' => [
-				[
-					'dist-url'  => url(sprintf('/repo/%s/dist/%%package%%/%%version%%-%%reference%%.%%type%%', $repo->name)),
-					'preferred' => true,
-				]
-			],
-		]);
+        $rootJson = [
+            // TODO: hardcoded right now - best practices around notify-batch, how to deal with
+            //       when sourcing multiple origins?
+            'notify-batch'       => 'https://packagist.org/downloads/',
 
-		$storage = Storage::disk('local');
-		$storage->put(sprintf('repo/%s/packages.json', $repo->name), $rootJson);
+            'providers-lazy-url' => sprintf('/repo/%s/%%package%%.json', $repo->name),
+        ];
+        if ($includePreferredMirror) {
+            $rootJson['mirrors'] = [
+                [
+                    'dist-url'  => url(sprintf('/dist/%s/%%package%%/%%reference%%', 'github')),
+                    'preferred' => true,
+                ]
+            ];
+        }
+        $rootJson = json_encode($rootJson);
 
-		if ($dataCallback) {
-			$dataCallback($rootJson);
-		}
-	}
+        // Write packages.json for future caching
+        $storage = Storage::disk('local');
+        $storage->put(sprintf('repo/%s/packages.json', $repo->name), $rootJson);
+
+        if ($dataCallback) {
+            $dataCallback($rootJson);
+        }
+    }
 }

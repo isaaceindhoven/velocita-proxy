@@ -45,7 +45,7 @@ class RepositoryController extends Controller
 	}
 
 	/**
-	 * @return Symfony\Component\HttpFoundation\Response
+	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	public function rootPackages(string $repoName): Response
 	{
