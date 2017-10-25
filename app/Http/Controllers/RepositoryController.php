@@ -45,16 +45,28 @@ class RepositoryController extends Controller
 	}
 
 	/**
+     * @param string $repoName The repository's name
+     *
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function rootPackages(string $repoName): Response
+	public function getPackages(string $repoName): Response
 	{
 		$repo = Repository::where('name', $repoName)->firstOrFail();
-		return response()
-			->stream(function () use ($repo) {
-				$this->repositoryService->createRootPackagesFile($repo, function (string $data) {
-					echo $data;
-				});
-			}, 200, ['Content-Type' => 'application/json']);
+        return response()->json(
+            $this->repositoryService->getPackagesStructure($repo)
+        );
 	}
+
+	/**
+     * @param string $repoName The repository's name
+     *
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+    public function getPackagesForVelocita(string $repoName): Response
+    {
+		$repo = Repository::where('name', $repoName)->firstOrFail();
+        return response()->json(
+            $this->repositoryService->getPackagesVelocitaStructure($repo)
+        );
+    }
 }
