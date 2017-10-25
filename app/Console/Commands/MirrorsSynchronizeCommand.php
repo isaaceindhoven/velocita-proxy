@@ -70,6 +70,8 @@ class MirrorsSynchronizeCommand extends Command
                 $repo = new Repository();
                 $repo->name = $repoName;
             }
+            $repo->notify = $packagesData->notify;
+            $repo->notify_batch = $packagesData->{'notify-batch'};
             $repo->providers_pattern = $packagesData->{'providers-url'};
             $repo->save();
 
