@@ -9,10 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RepositoryController extends Controller
 {
-	/** @var \App\Services\ProviderService */
+	/** @var ProviderService */
 	protected $providerService;
 
-	/** @var \App\Services\RepositoryService */
+	/** @var RepositoryService */
 	protected $repositoryService;
 
 	public function __construct(ProviderService $providerService, RepositoryService $repositoryService)
@@ -21,9 +21,6 @@ class RepositoryController extends Controller
 		$this->repositoryService = $repositoryService;
 	}
 
-	/**
-	 * @return \Symfony\Component\HttpFoundation\Response
-	 */
 	public function downloadPackage(string $repoName, string $namespace, string $package): Response
 	{
 		// Find the repository
@@ -47,7 +44,7 @@ class RepositoryController extends Controller
 	/**
      * @param string $repoName The repository's name
      *
-	 * @return \Symfony\Component\HttpFoundation\Response
+	 * @return Response
 	 */
 	public function getPackages(string $repoName): Response
 	{
@@ -60,7 +57,7 @@ class RepositoryController extends Controller
 	/**
      * @param string $repoName The repository's name
      *
-	 * @return \Symfony\Component\HttpFoundation\Response
+	 * @return Response
 	 */
     public function getPackagesForVelocita(string $repoName): Response
     {

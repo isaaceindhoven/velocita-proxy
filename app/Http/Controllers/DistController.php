@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class DistController extends Controller
 {
-    /** @var \App\Services\DistService */
+    /** @var DistService */
     protected $distService;
 
     public function __construct(DistService $distService)
@@ -15,9 +15,6 @@ class DistController extends Controller
         $this->distService = $distService;
     }
 
-    /**
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
     public function download(string $site, string $path): Response
     {
         return response()

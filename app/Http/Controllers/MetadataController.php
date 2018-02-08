@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 class MetadataController extends Controller
 {
     /**
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function getEndpoints(): Response
     {

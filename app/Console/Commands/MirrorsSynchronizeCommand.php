@@ -27,7 +27,7 @@ class MirrorsSynchronizeCommand extends Command
      */
     protected $description = 'Synchronize all repositories';
 
-    /** @var \App\Services\ProviderService */
+    /** @var ProviderService */
     protected $providerService;
 
     public function __construct(ProviderService $providerService)

@@ -2,12 +2,15 @@
 
 namespace App\Composer;
 
+use App\Models\ProviderInclude;
+use App\Models\Repository;
+
 class ProviderReference
 {
-	/** @var App\Models\Repository */
+	/** @var Repository */
 	public $repository;
 
-	/** @var App\Models\ProviderInclude */
+	/** @var ProviderInclude */
 	public $providerInclude;
 
 	/** @var string */
