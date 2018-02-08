@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Repository;
-use Composer\Semver\VersionParser;
 use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -25,7 +23,7 @@ class DistService
                 $response = $this->performGitHubRequest($site, $path);
                 break;
             default:
-                throw new \Exception(sprintf('Unsupported site: %s', $site));
+                throw new \Exception(sprintf('Unsupported dist type: %s', $site));
         }
 
         // Start the download and invoke the data callback on each chunk
@@ -56,6 +54,7 @@ class DistService
     protected function performGitHubRequest(string $site, string $path): ResponseInterface
     {
         $baseURL = config("dist.$site.options.baseURL");
+        $baseURL = rtrim($baseURL, '/') . '/';
         $distURL = $baseURL . $path;
 
         $requestConfig = $this->getDefaultGuzzleConfig();
