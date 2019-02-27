@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  proxy:
+    environment:
+      VELOCITA_TLS_ENABLED: "true"
+    ports:
+      - "0.0.0.0:${VELOCITA_HTTPS_PORT}:443"
+    volumes:
+      - type: bind
+        source: ${VELOCITA_TLS_CERT_FILE}
+        target: /etc/nginx/server.crt
+        read_only: true
+      - type: bind
+        source: ${VELOCITA_TLS_KEY_FILE}
+        target: /etc/nginx/server.key
+        read_only: true

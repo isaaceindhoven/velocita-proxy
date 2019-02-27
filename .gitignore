@@ -1,6 +1,2 @@
 /.env
 /.idea/
-/bootstrap/cache/
-/public/repo
-/storage/
-/vendor/

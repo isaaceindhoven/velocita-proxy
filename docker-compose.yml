@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+  proxy:
+    image: velocita-proxy:latest
+    build:
+      context: proxy
+    env_file: .env
+    ports:
+      - "0.0.0.0:${VELOCITA_HTTP_PORT}:80"
+    volumes:
+      - type: volume
+        source: cache
+        target: /var/cache/velocita
+        volume:
+          nocopy: true
+
+volumes:
+  cache:
