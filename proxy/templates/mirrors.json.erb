@@ -6,8 +6,13 @@ ENV.keys.map { |key| key.to_s }
     .map { |key| key[/^MIRROR_(.+?)_/, 1] }
     .uniq
     .each do |name|
+        url = ENV["MIRROR_#{name}_URL"].gsub(/^https?:(\/\/.+)$/, '\1')
+        unless url.end_with? '/'
+            url << '/'
+        end
+
         mirrors[name] = {
-            :match_url => ENV["MIRROR_#{name}_URL"],
+            :match_url => url,
             :path      => "/mirror/#{name.downcase}/",
         }
     end
