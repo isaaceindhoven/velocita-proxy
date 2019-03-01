@@ -1,11 +1,5 @@
 <%
 
-hostname = ENV['VELOCITA_HOSTNAME']
-tls_enabled = ENV['VELOCITA_TLS_ENABLED'] == 'true'
-public_port = tls_enabled ? ENV['VELOCITA_HTTPS_PORT'] : ENV['VELOCITA_HTTP_PORT']
-public_scheme = tls_enabled ? 'https' : 'http'
-full_host = "#{public_scheme}://#{hostname}:#{public_port}"
-
 mirrors = {}
 ENV.keys.map { |key| key.to_s }
     .select { |key| key.match(/^MIRROR_/) }
@@ -13,8 +7,8 @@ ENV.keys.map { |key| key.to_s }
     .uniq
     .each do |name|
         mirrors[name] = {
-            :match_url  => ENV["MIRROR_#{name}_URL"],
-            :target_url => "#{full_host}/mirror/#{name.downcase}/",
+            :match_url => ENV["MIRROR_#{name}_URL"],
+            :path      => "/mirror/#{name.downcase}/",
         }
     end
 
@@ -24,7 +18,7 @@ ENV.keys.map { |key| key.to_s }
       <%- mirrors.each_with_index do |(name, mirror), index| -%>
         {
             "url": "<%= mirror[:match_url] %>",
-            "target": "<%= mirror[:target_url] %>"
+            "path": "<%= mirror[:path] %>"
         }<% if index < mirrors.size - 1 %>,<% end %>
       <%- end -%>
     ]
