@@ -12,16 +12,17 @@ caches = {}
 mirrors = {}
 
 ENV.keys.map { |key| key.to_s }
-    .select { |key| key.match(/^MIRROR_/) }
-    .map { |key| key[/^MIRROR_(.+?)_/, 1] }
-    .uniq
+    .select { |key| key.match(/^MIRROR_.+_URL$/) }
+    .map { |key| key[/^MIRROR_(.+)_URL$/, 1] }
     .each do |name|
+        friendly_name = name.downcase.gsub('_', '-')
+
         url = ENV["MIRROR_#{name}_URL"].dup
         unless url.end_with? "/"
             url << "/"
         end
 
-        cache_name = ENV["MIRROR_#{name}_CACHE"] || name.downcase
+        cache_name = ENV["MIRROR_#{name}_CACHE"] || friendly_name
         unless caches.key?(cache_name)
             caches[cache_name] = {
                 :size   => ENV["MIRROR_#{name}_CACHE_SIZE"] || '100m',
@@ -31,6 +32,7 @@ ENV.keys.map { |key| key.to_s }
 
         mirrors[name.downcase] = {
             :type       => ENV["MIRROR_#{name}_TYPE"] || 'simple',
+            :path       => friendly_name,
             :url        => url,
             :cache      => cache_name,
             :auth_type  => ENV["MIRROR_#{name}_AUTH_TYPE"] || 'basic',
@@ -72,7 +74,7 @@ proxy_cache_path /var/cache/velocita/<%= name %> levels=2:2 keys_zone=<%= name %
 
 # Proxy redirects
 <%- mirrors.each do |name, mirror| -%>
-proxy_redirect <%= mirror[:url] %> <%= full_host %>/mirror/<%= name %>/;
+proxy_redirect <%= mirror[:url] %> <%= full_host %>/mirror/<%= mirror[:path] %>/;
 <%- end -%>
 
 # Allow keepalive to upstream
@@ -116,7 +118,7 @@ server {
     root /var/www/html;
   <%- mirrors.each do |name, mirror| -%>
 
-    location /mirror/<%= name %>/ {
+    location /mirror/<%= mirror[:path] %>/ {
         proxy_pass <%= mirror[:url] %>;
         proxy_cache <%= mirror[:cache] %>;
     <%- case mirror[:auth_type] -%>
@@ -131,7 +133,7 @@ server {
     <%- end -%>
     <%- if mirror[:type] == 'composer' -%>
 
-        location ~ /mirror/<%= name %>(.*/packages.json)$ {
+        location ~ /mirror/<%= mirror[:path] %>(.*/packages.json)$ {
             proxy_pass <%= mirror[:url] %>$1;
             proxy_cache_valid 200 2m;
         }
