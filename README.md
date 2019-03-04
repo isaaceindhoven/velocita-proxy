@@ -1,6 +1,6 @@
 # Velocita
 
-Velocita is a caching proxy for Composer repositories such as Packagist and distribution locations like GitHub.
+Velocita is a caching reverse proxy for Composer repositories such as Packagist and distribution locations like GitHub.
 
 * Speeds up downloads for package metadata and dist files
 * Serves cached files if the source location is unreachable or experiencing problems
@@ -33,8 +33,8 @@ Benchmark: `composer create-project symfony/skeleton symfony --profile` after cl
 
 There are two parts to Velocita:
 
-* Velocita-proxy, which acts as a pull-through cache
-* Composer-velocita, which instructs Composer to retrieve files from Velocita-proxy
+* Velocita Proxy, which acts as a caching reverse proxy
+* Composer-velocita, which instructs Composer to retrieve files from Velocita Proxy
 
 ### Velocita Proxy
 
@@ -50,10 +50,10 @@ Velocita is available as a Docker image. There are three supported ways to run t
         ```
 
     2. Copy `.env.dist` to `.env`
-    3. Edit the `.env` file and set at least:
+    3. Edit `.env` and set:
 
-        * `VELOCITA_HOSTNAME`: the domain name on which Velocita will be hosted
-        * `VELOCITA_TLS_CERT_FILE`: the path to your X509 certificate (chain) for the domain
+        * `VELOCITA_HOSTNAME`: the hostname (e.g. `localhost`) that Velocita will listen to
+        * `VELOCITA_TLS_CERT_FILE`: the path to your X.509 PEM-encoded certificate (or chain) for the domain
         * `VELOCITA_TLS_KEY_FILE`: the path to the private key associated with the certificate
 
     4. Start Velocita:

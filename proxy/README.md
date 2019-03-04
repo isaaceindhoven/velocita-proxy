@@ -1,7 +1,6 @@
 # Velocita Proxy Docker image
 
-[Velocita](https://github.com/isaaceindhoven/velocita-proxy) acts as a caching proxy to Composer package and
-distribution file repositories.
+[Velocita](https://github.com/isaaceindhoven/velocita-proxy) acts as a caching reverse proxy to Composer repositories.
 
 Combined with [composer-velocita](https://github.com/isaaceindhoven/composer-velocita), it can tremendously increase the
 performance of a `composer install` where a local cache is not yet available and makes sure your dependencies are
@@ -82,8 +81,8 @@ docker run -d --name velocita -p 80:80 \
 
 ## Enabling HTTPS
 
-Mount your X.509 certificate and key files inside the container at `/etc/nginx/server.crt` and `/etc/nginx/server.key`,
-open up port `443` and set `VELOCITA_TLS_ENABLED` to `true`:
+Mount your X.509 PEM-encoded certificate (or chain) and key file inside the container at `/etc/nginx/server.crt` and
+`/etc/nginx/server.key`, open up port `443` and set `VELOCITA_TLS_ENABLED` to `true`:
 
 ```
 docker run -d --name velocita -p 80:80 -p 443:443 \
