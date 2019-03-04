@@ -12,7 +12,7 @@ Velocita is a caching proxy for Composer repositories such as Packagist and dist
 Velocita can give you major performance improvements when a package is not present in the local cache. For example,
 installing the PHPUnit dependencies from `composer.lock`:
 
-| Configuration       | Time           | Relative |
+| Configuration       | Duration       | Relative |
 | ------------------- |:--------------:|:--------:|
 | Composer            | 25.59s ± 1.14s |   100%   |
 | Composer + Velocita | 1.14s ± 0.05s  |    4%    |
@@ -22,7 +22,7 @@ and the vendor folder.
 
 Symfony Flex's parallel prefetcher can also benefit from Velocita:
 
-| Configuration           | Time           | Relative |
+| Configuration           | Duration       | Relative |
 | ----------------------- |:--------------:|:--------:|
 | Symfony Flex            | 13.13s ± 0.17s |   100%   |
 | Symfony Flex + Velocita | 10.59s ± 0.20s |    81%   |
