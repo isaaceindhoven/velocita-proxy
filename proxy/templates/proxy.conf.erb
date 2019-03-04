@@ -22,19 +22,16 @@ ENV.keys.map { |key| key.to_s }
             url << "/"
         end
 
-        cache_name = ENV["MIRROR_#{name}_CACHE"] || friendly_name
-        unless caches.key?(cache_name)
-            caches[cache_name] = {
-                :size   => ENV["MIRROR_#{name}_CACHE_SIZE"] || '100m',
-                :expiry => ENV["MIRROR_#{name}_CACHE_EXPIRY"] || '3650d',
-            }
-        end
+        caches[friendly_name] = {
+            :size   => ENV["MIRROR_#{name}_CACHE_SIZE"] || '1g',
+            :expiry => ENV["MIRROR_#{name}_CACHE_EXPIRY"] || '3650d',
+        }
 
-        mirrors[name.downcase] = {
+        mirrors[friendly_name] = {
             :type       => ENV["MIRROR_#{name}_TYPE"] || 'simple',
             :path       => friendly_name,
             :url        => url,
-            :cache      => cache_name,
+            :cache      => friendly_name,
             :auth_type  => ENV["MIRROR_#{name}_AUTH_TYPE"] || 'basic',
             :auth_user  => ENV["MIRROR_#{name}_AUTH_USERNAME"] || '',
             :auth_pass  => ENV["MIRROR_#{name}_AUTH_PASSWORD"] || '',
