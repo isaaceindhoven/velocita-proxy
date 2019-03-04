@@ -57,4 +57,4 @@ You're all set!
 ## License
 
 This project is licensed under the MIT License - see the
-[LICENSE](https://github.com/isaaceindhoven/velocita/blob/master/LICENSE) file for details.
+[LICENSE](https://github.com/isaaceindhoven/velocita-proxy/blob/master/LICENSE) file for details.
