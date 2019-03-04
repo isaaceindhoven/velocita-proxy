@@ -4,7 +4,7 @@
 distribution file repositories.
 
 Combined with [composer-velocita](https://github.com/isaaceindhoven/composer-velocita), it can tremendously increase the
-performance of a `composer install` where a local cache is not yet available or makes sure your dependencies are
+performance of a `composer install` where a local cache is not yet available and makes sure your dependencies are
 accessible even when the source location is experiencing issues.
 
 ## Running the proxy
