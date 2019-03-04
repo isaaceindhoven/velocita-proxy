@@ -12,5 +12,7 @@ COPY templates/* /root/templates/
 
 VOLUME /var/cache/velocita
 
+EXPOSE 80/tcp 443/tcp
+
 ENTRYPOINT ["/root/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
