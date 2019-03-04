@@ -31,24 +31,57 @@ Benchmark: `composer create-project symfony/skeleton symfony --profile` after cl
 
 ## Installation
 
-### Velocita proxy
+There are two parts to Velocita:
 
-WIP
+* Velocita-proxy, which acts as a pull-through cache
+* Composer-velocita, which instructs Composer to retrieve files from Velocita-proxy
+
+### Velocita Proxy
+
+Velocita is available as a Docker image. There are three supported ways to run this image:
+
+1. Using [docker-compose](https://docs.docker.com/compose/):
+
+    1. Clone this repository:
+
+        ```
+        git clone https://github.com/isaaceindhoven/velocita-proxy
+        cd composer-velocita
+        ```
+
+    2. Copy `.env.dist` to `.env`
+    3. Edit the `.env` file and set at least:
+
+        * `VELOCITA_HOSTNAME`: the domain name on which Velocita will be hosted
+        * `VELOCITA_TLS_CERT_FILE`: the path to your X509 certificate (chain) for the domain
+        * `VELOCITA_TLS_KEY_FILE`: the path to the private key associated with the certificate
+
+    4. Start Velocita:
+
+        ```
+        docker-compose -f docker-compose.yml -f docker-compose.https.yml up -d
+        ```
+
+    5. Done!
+
+2. Run the image directly: see [the image's usage instructions](proxy/README.md).
+
+3. Using Kubernetes: this is a work in progress.
 
 ### Composer-velocita
 
 [Composer-velocita](https://github.com/isaaceindhoven/composer-velocita) is a Composer plugin that redirects downloads
-to your Velocita instance for all repositories it supports, with no changes required in `composer.json`.
+to your Velocita instance for all repositories it supports.
 
 Run the following two commands on the machine where you want to enable Velocita, replacing
-`https://url.to.your.velocita.tld/` with the location of your instance:
+`https://your.velocita.tld/` with the location of your instance:
 
 ```
 composer global require isaac/composer-velocita
-composer velocita:enable https://url.to.your.velocita.tld/
+composer velocita:enable https://your.velocita.tld/
 ```
 
-You're all set!
+And you're all set!
 
 ## Authors
 
@@ -56,5 +89,4 @@ You're all set!
 
 ## License
 
-This project is licensed under the MIT License - see the
-[LICENSE](https://github.com/isaaceindhoven/velocita-proxy/blob/master/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
