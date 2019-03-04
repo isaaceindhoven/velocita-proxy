@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   proxy:
-    image: velocita-proxy:latest
+    image: isaaceindhoven/velocita-proxy:latest
     build:
       context: proxy
     env_file: .env
