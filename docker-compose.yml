@@ -1,10 +1,8 @@
-version: "3.3"
+version: '3.3'
 
 services:
   proxy:
     image: isaaceindhoven/velocita-proxy:latest
-    build:
-      context: proxy
     env_file: .env
     ports:
       - "0.0.0.0:${VELOCITA_HTTP_PORT}:80"
