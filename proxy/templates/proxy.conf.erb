@@ -4,7 +4,7 @@ require 'base64'
 
 hostname = ENV['VELOCITA_HOSTNAME'] || 'localhost'
 tls_enabled = ENV['VELOCITA_TLS_ENABLED'] == 'true'
-public_port = tls_enabled ? (ENV['VELOCITA_HTTPS_PORT'] || 80) : (ENV['VELOCITA_HTTP_PORT'] || 443)
+public_port = tls_enabled ? (ENV['VELOCITA_HTTPS_PORT'] || 443) : (ENV['VELOCITA_HTTP_PORT'] || 80)
 public_scheme = tls_enabled ? 'https' : 'http'
 full_host = "#{public_scheme}://#{hostname}:#{public_port}"
 
