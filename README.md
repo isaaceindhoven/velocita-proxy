@@ -52,7 +52,7 @@ Velocita is available as a Docker image. There are three supported ways to run t
     2. Copy `.env.dist` to `.env`
     3. Edit `.env` and set:
 
-        * `VELOCITA_HOSTNAME`: the hostname (e.g. `localhost`) that Velocita will listen to
+        * `VELOCITA_URL`: the URL (e.g. `http://localhost`) on which Velocita is hosted
         * `VELOCITA_TLS_CERT_FILE`: the path to your X.509 PEM-encoded certificate (or chain) for the domain
         * `VELOCITA_TLS_KEY_FILE`: the path to the private key associated with the certificate
 
@@ -73,8 +73,8 @@ Velocita is available as a Docker image. There are three supported ways to run t
 [Composer-velocita](https://github.com/isaaceindhoven/composer-velocita) is a Composer plugin that redirects downloads
 to your Velocita instance for all repositories it supports.
 
-Run the following two commands on the machine where you want to enable Velocita, replacing
-`https://your.velocita.tld/` with the location of your instance:
+Run the following two commands on the machine where you want to enable Velocita, replacing `https://your.velocita.tld/`
+with the URL of your instance:
 
 ```
 composer global require isaac/composer-velocita

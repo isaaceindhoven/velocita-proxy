@@ -25,12 +25,10 @@ Go ahead and visit `http://localhost/mirror/packagist/p/packages.json` - this sh
 
 Velocita configures itself with the environment variables you pass.
 
-| Environment variable   | Value    | Default     | Description               |
-| ---------------------- | -------- | ----------- | ------------------------- |
-| `VELOCITA_HOSTNAME`    | Hostname | `localhost` | Used for redirects.       |
-| `VELOCITA_HTTP_PORT`   | Integer  | `80`        | Public HTTP port.         |
-| `VELOCITA_HTTPS_PORT`  | Integer  | `443`       | Public HTTPS port.        |
-| `VELOCITA_TLS_ENABLED` | Boolean  | `false`     | Whether HTTPS is enabled. |
+| Environment variable   | Value    | Default            | Description              |
+| ---------------------- | -------- | ------------------ | ------------------------ |
+| `VELOCITA_URL`         | URL      | `http://localhost` | Used for redirects.      |
+| `VELOCITA_TLS_ENABLED` | Boolean  | `false`            | Whether to enable HTTPS. |
 
 ## Adding mirrors
 
@@ -81,11 +79,15 @@ docker run -d --name velocita -p 80:80 \
 
 ## Enabling HTTPS
 
-Mount your X.509 PEM-encoded certificate (or chain) and key file inside the container at `/etc/nginx/server.crt` and
-`/etc/nginx/server.key`, open up port `443` and set `VELOCITA_TLS_ENABLED` to `true`:
+* Open up port `443`
+* Update `VELOCITA_URL` to use `https://`
+* Set `VELOCITA_TLS_ENABLED` to `true`
+* Mount your X.509 PEM-encoded certificate (or chain) and key file inside the container at `/etc/nginx/server.crt` and
+  `/etc/nginx/server.key`
 
 ```
 docker run -d --name velocita -p 80:80 -p 443:443 \
+    -e VELOCITA_URL=https://localhost \
     -e VELOCITA_TLS_ENABLED=true \
     -e MIRROR_PACKAGIST_URL=https://repo.packagist.org \
     -e MIRROR_PACKAGIST_TYPE=composer \
