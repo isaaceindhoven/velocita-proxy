@@ -28,14 +28,13 @@ ENV.keys.map { |key| key.to_s }
         }
 
         mirrors[friendly_name] = {
-            :type       => ENV["MIRROR_#{name}_TYPE"] || 'simple',
-            :path       => friendly_name,
-            :url        => url,
-            :cache      => friendly_name,
-            :auth_type  => ENV["MIRROR_#{name}_AUTH_TYPE"] || 'basic',
-            :auth_user  => ENV["MIRROR_#{name}_AUTH_USERNAME"] || '',
-            :auth_pass  => ENV["MIRROR_#{name}_AUTH_PASSWORD"] || '',
-            :auth_token => ENV["MIRROR_#{name}_AUTH_TOKEN"] || '',
+            :type      => ENV["MIRROR_#{name}_TYPE"] || 'simple',
+            :path      => friendly_name,
+            :url       => url,
+            :cache     => friendly_name,
+            :auth_type => ENV["MIRROR_#{name}_AUTH_TYPE"] || 'basic',
+            :auth_user => ENV["MIRROR_#{name}_AUTH_USERNAME"] || '',
+            :auth_pass => ENV["MIRROR_#{name}_AUTH_PASSWORD"] || '',
         }
     end
 
@@ -122,10 +121,6 @@ server {
     <%- when 'basic' -%>
       <%- unless mirror[:auth_user].empty? || mirror[:auth_pass].empty? -%>
         proxy_set_header Authorization "Basic <%= Base64.strict_encode64("#{mirror[:auth_user]}:#{mirror[:auth_pass]}") %>";
-      <%- end -%>
-    <%- when 'github' -%>
-      <%- unless mirror[:auth_token].empty? -%>
-        proxy_set_header Authorization "token <%= mirror[:auth_token] %>";
       <%- end -%>
     <%- end -%>
     <%- if mirror[:type] == 'composer' -%>
