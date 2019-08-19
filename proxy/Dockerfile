@@ -1,4 +1,4 @@
-FROM nginx:1.15.9-alpine
+FROM nginx:1.17.3-alpine
 
 LABEL maintainer="Jelle Raaijmakers <jelle.raaijmakers@isaac.nl>"
 
