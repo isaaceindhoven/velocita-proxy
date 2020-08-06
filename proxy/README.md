@@ -20,7 +20,7 @@ docker run -d --name velocita -p 80:80 \
 
 Go ahead and visit `http://localhost/mirror/packagist/p/packages.json` - this should now give you the Packagist index!
 
-## Velocita configuration
+## Configuring Velocita
 
 Velocita configures itself with the environment variables you pass.
 
@@ -64,7 +64,7 @@ For every mirror, the following configuration options are available:
 
 For time and size unit syntax, see: http://nginx.org/en/docs/syntax.html
 
-## Storage
+## Configuring the storage volume
 
 Inside the container, all cache files are stored in a volume mounted on `/var/cache/velocita`. Use `-v` to mount this
 volume somewhere on your host's filesystem:
