@@ -62,6 +62,8 @@ For every mirror, the following configuration options are available:
 | `MIRROR_{name}_AUTH_USERNAME` | No       | String                                 | Username for basic authentication.       |
 | `MIRROR_{name}_AUTH_PASSWORD` | No       | String                                 | Password for basic authentication.       |
 
+For time and size unit syntax, see: http://nginx.org/en/docs/syntax.html
+
 ## Storage
 
 Inside the container, all cache files are stored in a volume mounted on `/var/cache/velocita`. Use `-v` to mount this
