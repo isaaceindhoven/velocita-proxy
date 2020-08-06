@@ -52,7 +52,7 @@ Velocita is available as a Docker image. There are three supported ways to run t
     2. Copy `.env.dist` to `.env`
     3. Edit `.env` and set:
 
-        * `VELOCITA_URL`: the URL (e.g. `http://localhost`) on which Velocita is hosted
+        * `VELOCITA_URL`: the URL (e.g. `https://mymdomain.tld`) on which Velocita is hosted
         * `VELOCITA_TLS_CERT_FILE`: the path to your X.509 PEM-encoded certificate (or chain) for the domain
         * `VELOCITA_TLS_KEY_FILE`: the path to the private key associated with the certificate
 

@@ -1,5 +1,5 @@
 #!/bin/ash
-set -e
+set -eu
 
 # Generate proxy sites configuration
 erb -U -T '-' /root/templates/proxy.conf.erb > /etc/nginx/conf.d/proxy.conf

@@ -52,15 +52,15 @@ docker run -d --name velocita -p 80:80 \
 
 For every mirror, the following configuration options are available:
 
-| Environment variable          | Value                    | Default  | Description                              |
-| ----------------------------- | ------------------------ | -------- | ---------------------------------------- |
-| `MIRROR_{name}_URL`           | URL                      | _(nil)_  | The URL of the upstream server to proxy. |
-| `MIRROR_{name}_TYPE`          | `simple`, `composer`     | `simple` | The mirror type.                         |
-| `MIRROR_{name}_CACHE_EXPIRY`  | Time (e.g. `5d`, `10m`)  | `3650d`  | Time after which cached items expire.    |
-| `MIRROR_{name}_CACHE_SIZE`    | Size (e.g. `100m`, `2g`) | `1g`     | Maximum size of this mirror's cache.     |
-| `MIRROR_{name}_AUTH_TYPE`     | `basic`                  | _(nil)_  | Type of upstream authentication.         |
-| `MIRROR_{name}_AUTH_USERNAME` | Username                 | _(nil)_  | Username for basic authentication.       |
-| `MIRROR_{name}_AUTH_PASSWORD` | Password                 | _(nil)_  | Password for basic authentication.       |
+| Environment variable          | Required | Type                                   | Description                              |
+| ----------------------------- | -------- | -------------------------------------- | ---------------------------------------- |
+| `MIRROR_{name}_URL`           | Yes      | URL                                    | The URL of the upstream server to proxy. |
+| `MIRROR_{name}_TYPE`          | No       | One of: `simple` (default), `composer` | The mirror type.                         |
+| `MIRROR_{name}_CACHE_EXPIRY`  | No       | Time (default: `3650d`)                | Time after which cached items expire.    |
+| `MIRROR_{name}_CACHE_SIZE`    | No       | Size (default: `1g`)                   | Maximum size of this mirror's cache.     |
+| `MIRROR_{name}_AUTH_TYPE`     | No       | Always `basic` (default)               | Type of upstream authentication.         |
+| `MIRROR_{name}_AUTH_USERNAME` | No       | String                                 | Username for basic authentication.       |
+| `MIRROR_{name}_AUTH_PASSWORD` | No       | String                                 | Password for basic authentication.       |
 
 ## Storage
 
