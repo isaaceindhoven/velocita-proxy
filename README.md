@@ -1,5 +1,7 @@
 # Velocita
 
+[![](https://images.microbadger.com/badges/version/isaaceindhoven/velocita-proxy.svg)](https://hub.docker.com/r/isaaceindhoven/velocita-proxy)
+
 Velocita is a caching reverse proxy for Composer repositories such as Packagist and distribution locations like GitHub.
 
 * Speeds up downloads for package metadata and dist files
