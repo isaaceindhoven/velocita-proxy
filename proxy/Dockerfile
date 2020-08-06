@@ -7,12 +7,14 @@ RUN apk --no-cache upgrade \
     && sed -i '/worker_processes/c\worker_processes auto;' /etc/nginx/nginx.conf \
     && rm /etc/nginx/conf.d/default.conf
 
-COPY entrypoint.sh /root/
-COPY templates/* /root/templates/
+COPY entrypoint.sh /usr/local/bin/
 
-VOLUME /var/cache/velocita
+RUN mkdir -p /usr/local/lib/velocita/
+COPY templates/* /usr/local/lib/velocita/
+
+VOLUME /var/cache/velocita/
 
 EXPOSE 80/tcp 443/tcp
 
-ENTRYPOINT ["/root/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
