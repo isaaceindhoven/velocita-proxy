@@ -11,7 +11,7 @@ accessible even when the source location is experiencing issues.
 Start a proxy for Packagist and GitHub, listening on port `80`:
 
 ```
-docker run -d --name velocita -p 80:80 \
+docker run -d --name velocita -p 80:8080 \
     -e MIRROR_PACKAGIST_URL=https://repo.packagist.org \
     -e MIRROR_PACKAGIST_TYPE=composer \
     -e MIRROR_GITHUB_CODELOAD_URL=https://codeload.github.com \
@@ -40,7 +40,7 @@ invalidation is applied.
 For example, this will proxy two different Composer repositories:
 
 ```
-docker run -d --name velocita -p 80:80 \
+docker run -d --name velocita -p 80:8080 \
     -e MIRROR_WPACKAGIST_URL=https://wpackagist.org \
     -e MIRROR_WPACKAGIST_TYPE=composer \
     -e MIRROR_FIREGENTO_URL=https://packages.firegento.com \
@@ -70,7 +70,7 @@ Inside the container, all cache files are stored in a volume mounted on `/var/ca
 volume somewhere on your host's filesystem:
 
 ```
-docker run -d --name velocita -p 80:80 \
+docker run -d --name velocita -p 80:8080 \
     -e MIRROR_PACKAGIST_URL=https://repo.packagist.org \
     -e MIRROR_PACKAGIST_TYPE=composer \
     -v /path/on/host:/var/cache/velocita \
@@ -86,7 +86,7 @@ docker run -d --name velocita -p 80:80 \
   `/etc/nginx/server.key`
 
 ```
-docker run -d --name velocita -p 80:80 -p 443:443 \
+docker run -d --name velocita -p 80:8080 -p 443:8443 \
     -e VELOCITA_URL=https://localhost \
     -e VELOCITA_TLS_ENABLED=true \
     -e MIRROR_PACKAGIST_URL=https://repo.packagist.org \

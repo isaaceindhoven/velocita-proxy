@@ -15,7 +15,7 @@ COPY templates/* /usr/local/lib/velocita/
 
 VOLUME /var/cache/velocita/
 
-EXPOSE 80/tcp 443/tcp
+EXPOSE 8080/tcp 8443/tcp
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

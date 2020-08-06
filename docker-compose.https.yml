@@ -5,7 +5,7 @@ services:
     environment:
       VELOCITA_TLS_ENABLED: "true"
     ports:
-      - "0.0.0.0:${VELOCITA_HTTPS_PORT}:443"
+      - "0.0.0.0:${VELOCITA_HTTPS_PORT}:8443"
     volumes:
       - type: bind
         source: ${VELOCITA_TLS_CERT_FILE}
