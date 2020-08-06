@@ -4,3 +4,4 @@ services:
   proxy:
     build:
       context: proxy
+    image: isaaceindhoven/velocita-proxy:${BUILD_VERSION}
