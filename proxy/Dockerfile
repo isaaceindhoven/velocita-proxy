@@ -5,7 +5,8 @@ LABEL maintainer="Jelle Raaijmakers <jelle.raaijmakers@isaac.nl>"
 RUN apk --no-cache upgrade \
     && apk --no-cache add ruby \
     && sed -i '/^user /d' /etc/nginx/nginx.conf \
-    && sed -i '/worker_processes/c\worker_processes auto;' /etc/nginx/nginx.conf \
+    && sed -i '/^worker_processes/c\worker_processes auto;' /etc/nginx/nginx.conf \
+    && sed -i '/^pid /c\pid /tmp/nginx.pid;' /etc/nginx/nginx.conf \
     && rm /etc/nginx/conf.d/default.conf
 
 COPY entrypoint.sh /usr/local/bin/
