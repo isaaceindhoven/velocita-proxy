@@ -9,28 +9,6 @@ Velocita is a caching reverse proxy for Composer repositories such as Packagist 
 * Can be used as a shared cache by multiple developers
 * No changes required to your project's files
 
-## Performance
-
-Velocita can give you major performance improvements when a package is not present in the local cache. For example,
-installing the PHPUnit dependencies from `composer.lock`:
-
-| Configuration       | Duration       | Relative |
-| ------------------- |:--------------:|:--------:|
-| Composer            | 25.59s ± 1.14s |   100%   |
-| Composer + Velocita | 1.14s ± 0.05s  |    4%    |
-
-Benchmark: `composer install --profile` after `composer require phpunit/phpunit:8.0.4` and clearing both the local cache
-and the vendor folder.
-
-Symfony Flex's parallel prefetcher can also benefit from Velocita:
-
-| Configuration           | Duration       | Relative |
-| ----------------------- |:--------------:|:--------:|
-| Symfony Flex            | 13.13s ± 0.17s |   100%   |
-| Symfony Flex + Velocita | 10.59s ± 0.20s |    81%   |
-
-Benchmark: `composer create-project symfony/skeleton symfony --profile` after clearing the local cache.
-
 ## Installation
 
 There are two parts to Velocita:
@@ -38,7 +16,7 @@ There are two parts to Velocita:
 * Velocita Proxy, which acts as a caching reverse proxy
 * Composer-velocita, which instructs Composer to retrieve files from Velocita Proxy
 
-### Velocita Proxy
+### Installing Velocita Proxy
 
 Velocita is available as a Docker image. There are three supported ways to run this image:
 
@@ -70,7 +48,7 @@ Velocita is available as a Docker image. There are three supported ways to run t
 
 3. Using Kubernetes: this is a work in progress.
 
-### Composer-velocita
+### Using Composer-velocita
 
 [Composer-velocita](https://github.com/isaaceindhoven/composer-velocita) is a Composer plugin that redirects downloads
 to your Velocita instance for all repositories it supports.
@@ -84,6 +62,28 @@ composer velocita:enable https://your.velocita.tld/
 ```
 
 And you're all set!
+
+## Performance
+
+Velocita can give you major performance improvements when a package is not present in the local cache. For example,
+installing the PHPUnit dependencies from `composer.lock`:
+
+| Configuration       | Duration       | Relative |
+| ------------------- |:--------------:|:--------:|
+| Composer            | 25.59s ± 1.14s |   100%   |
+| Composer + Velocita | 1.14s ± 0.05s  |    4%    |
+
+Benchmark: `composer install --profile` after `composer require phpunit/phpunit:8.0.4` and clearing both the local cache
+and the vendor folder.
+
+Symfony Flex's parallel prefetcher can also benefit from Velocita:
+
+| Configuration           | Duration       | Relative |
+| ----------------------- |:--------------:|:--------:|
+| Symfony Flex            | 13.13s ± 0.17s |   100%   |
+| Symfony Flex + Velocita | 10.59s ± 0.20s |    81%   |
+
+Benchmark: `composer create-project symfony/skeleton symfony --profile` after clearing the local cache.
 
 ## Authors
 
