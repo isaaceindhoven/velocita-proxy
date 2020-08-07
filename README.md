@@ -18,7 +18,7 @@ There are two parts to Velocita:
 
 ### Installing Velocita Proxy
 
-Velocita is available as a Docker image. There are three supported ways to run this image:
+Velocita is available as a Docker image. There are two supported ways to run this image:
 
 1. Using [docker-compose](https://docs.docker.com/compose/):
 
@@ -44,9 +44,7 @@ Velocita is available as a Docker image. There are three supported ways to run t
 
     5. Done!
 
-2. Run the image directly: see [the image's usage instructions](proxy/README.md).
-
-3. Using Kubernetes: this is a work in progress.
+2. Run the Docker image directly: see [the image's usage instructions](proxy/README.md).
 
 ### Using Composer-velocita
 
