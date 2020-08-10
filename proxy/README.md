@@ -2,9 +2,9 @@
 
 [Velocita](https://github.com/isaaceindhoven/velocita-proxy) acts as a caching reverse proxy to Composer repositories.
 
-Combined with [composer-velocita](https://github.com/isaaceindhoven/composer-velocita), it can tremendously increase the
-performance of a `composer install` where a local cache is not yet available and makes sure your dependencies are
-accessible even when the source location is experiencing issues.
+Combined with [composer-velocita](https://github.com/isaaceindhoven/composer-velocita), it increases the performance
+of a `composer install` when a local cache is not yet available and makes sure packages can be downloaded even if the
+source location is experiencing issues.
 
 ## Running the proxy
 
@@ -18,18 +18,18 @@ docker run -d --name velocita -p 80:8080 \
     isaaceindhoven/velocita-proxy
 ```
 
-Go ahead and visit `http://localhost/mirror/packagist/p/packages.json` - this should now give you the Packagist index!
+Go ahead and visit `http://localhost/mirror/packagist/packages.json` - this should now give you the Packagist index!
 
 ## Configuring Velocita
 
 Velocita configures itself with the environment variables you pass.
 
-| Environment variable   | Value    | Default            | Description              |
-| ---------------------- | -------- | ------------------ | ------------------------ |
-| `VELOCITA_URL`         | URL      | `http://localhost` | Used for redirects.      |
-| `VELOCITA_TLS_ENABLED` | Boolean  | `false`            | Whether to enable HTTPS. |
+| Environment variable   | Required | Type                              | Description                            |
+| ---------------------- | -------- | --------------------------------- | -------------------------------------- |
+| `VELOCITA_URL`         | No       | URL (default: `http://localhost`) | The URL at which Velocita is reachable |
+| `VELOCITA_TLS_ENABLED` | No       | One of: `true`, `false` (default) | If HTTPS should be enabled             |
 
-## Adding mirrors
+## Configuring mirrors
 
 A mirror is added if you pass a variable of the form `MIRROR_{name}_URL`, and is configured with additional
 `MIRROR_{name}_*` variables.
@@ -48,19 +48,17 @@ docker run -d --name velocita -p 80:8080 \
     isaaceindhoven/velocita-proxy
 ```
 
-## Configuring mirrors
-
 For every mirror, the following configuration options are available:
 
-| Environment variable          | Required | Type                                   | Description                              |
-| ----------------------------- | -------- | -------------------------------------- | ---------------------------------------- |
-| `MIRROR_{name}_URL`           | Yes      | URL                                    | The URL of the upstream server to proxy. |
-| `MIRROR_{name}_TYPE`          | No       | One of: `simple` (default), `composer` | The mirror type.                         |
-| `MIRROR_{name}_CACHE_EXPIRY`  | No       | Time (default: `3650d`)                | Time after which cached items expire.    |
-| `MIRROR_{name}_CACHE_SIZE`    | No       | Size (default: `1g`)                   | Maximum size of this mirror's cache.     |
-| `MIRROR_{name}_AUTH_TYPE`     | No       | Always `basic` (default)               | Type of upstream authentication.         |
-| `MIRROR_{name}_AUTH_USERNAME` | No       | String                                 | Username for basic authentication.       |
-| `MIRROR_{name}_AUTH_PASSWORD` | No       | String                                 | Password for basic authentication.       |
+| Environment variable          | Required | Type                                   | Description                             |
+| ----------------------------- | -------- | -------------------------------------- | --------------------------------------- |
+| `MIRROR_{name}_URL`           | Yes      | URL                                    | The URL of the upstream server to proxy |
+| `MIRROR_{name}_TYPE`          | No       | One of: `simple` (default), `composer` | The mirror type                         |
+| `MIRROR_{name}_CACHE_EXPIRY`  | No       | Time (default: `3650d`)                | Time after which cached items expire    |
+| `MIRROR_{name}_CACHE_SIZE`    | No       | Size (default: `1g`)                   | Maximum size of this mirror's cache     |
+| `MIRROR_{name}_AUTH_TYPE`     | No       | Always `basic` (default)               | Type of upstream authentication         |
+| `MIRROR_{name}_AUTH_USERNAME` | No       | String                                 | Username for basic authentication       |
+| `MIRROR_{name}_AUTH_PASSWORD` | No       | String                                 | Password for basic authentication       |
 
 For time and size unit syntax, see: http://nginx.org/en/docs/syntax.html
 
