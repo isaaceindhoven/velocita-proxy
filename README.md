@@ -67,22 +67,26 @@ And you're all set!
 Velocita can give you major performance improvements when a package is not present in the local cache. For example,
 installing the PHPUnit dependencies from `composer.lock`:
 
-| Configuration       | Duration       | Relative |
-| ------------------- |:--------------:|:--------:|
-| Composer            | 25.59s ± 1.14s |   100%   |
-| Composer + Velocita | 1.14s ± 0.05s  |    4%    |
+| Configuration       | Duration     | Relative |
+| ------------------- |:------------:|:--------:|
+| Composer            |  3.5s ± 0.1s |   100%   |
+| Composer + Velocita |  1.2s ± 0.0s |    34%   |
 
-Benchmark: `composer install --profile` after `composer require phpunit/phpunit:8.0.4` and clearing both the local cache
+Benchmark: `composer install --profile` after `composer require phpunit/phpunit:8.5.8` and clearing both the local cache
 and the vendor folder.
 
-Symfony Flex's parallel prefetcher can also benefit from Velocita:
+Velocita works great together with Symfony Flex:
 
-| Configuration           | Duration       | Relative |
-| ----------------------- |:--------------:|:--------:|
-| Symfony Flex            | 13.13s ± 0.17s |   100%   |
-| Symfony Flex + Velocita | 10.59s ± 0.20s |    81%   |
+| Configuration                      | Duration    | Relative |
+| ---------------------------------- |:-----------:|:--------:|
+| Composer + Symfony Flex            | 7.0s ± 0.1s |   100%   |
+| Composer + Symfony Flex + Velocita | 3.7s ± 0.0s |    52%   |
 
-Benchmark: `composer create-project symfony/skeleton symfony --profile` after clearing the local cache.
+Benchmark setup:
+
+* `composer create-project symfony/skeleton symfony --profile` after clearing the local cache.
+* Velocita is configured with mirrors for Packagist, GitHub Codeload and Symfony Flex.
+* Composer version 2.0.0-alpha3.
 
 ## Authors
 
