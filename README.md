@@ -64,6 +64,11 @@ composer velocita:enable https://your.velocita.tld/
 
 And you're all set!
 
+### Configuration
+
+See the [Docker image instructions](proxy/README.md) for environment variables that you can use to configure the
+proxy's behavior.
+
 ## Performance
 
 Velocita can give you major performance improvements when a package is not present in the local cache. For example,
@@ -95,6 +100,10 @@ Benchmark setup:
 ## Authors
 
 * Jelle Raaijmakers - [jelle.raaijmakers@isaac.nl](mailto:jelle.raaijmakers@isaac.nl) / [GMTA](https://github.com/GMTA)
+
+## Contributing
+
+Raise an issue or submit a pull request on [GitHub](https://github.com/isaaceindhoven/velocita-proxy).
 
 ## License
 
