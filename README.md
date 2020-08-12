@@ -18,36 +18,38 @@ There are two parts to Velocita:
 * Velocita Proxy, which acts as a caching reverse proxy
 * Composer-velocita, which instructs Composer to retrieve files from Velocita Proxy
 
-### Installing Velocita Proxy
+### Running Velocita Proxy
 
 Velocita is available as a Docker image. There are two supported ways to run this image:
 
-1. Using [docker-compose](https://docs.docker.com/compose/):
+#### Using docker-compose
 
-    1. Clone this repository:
+1. Clone this repository:
 
-        ```
-        git clone https://github.com/isaaceindhoven/velocita-proxy
-        cd velocita-proxy
-        ```
+    ```
+    git clone https://github.com/isaaceindhoven/velocita-proxy
+    cd velocita-proxy
+    ```
 
-    2. Copy `.env.dist` to `.env`
-    3. Edit `.env` and set:
+2. Copy `.env.dist` to `.env`
+3. Edit `.env` and set:
 
-        * `VELOCITA_URL`: the URL (e.g. `https://mydomain.tld`) on which Velocita is hosted
-        * `VELOCITA_TLS_ENABLED`: set to `true` to enable HTTPS
-        * `VELOCITA_TLS_CERT_FILE`: the path to your X.509 PEM-encoded certificate (or chain) for the domain
-        * `VELOCITA_TLS_KEY_FILE`: the path to the private key associated with the certificate
+    * `VELOCITA_URL`: the URL (e.g. `https://mydomain.tld`) on which Velocita is hosted
+    * `VELOCITA_TLS_ENABLED`: set to `true` to enable HTTPS
+    * `VELOCITA_TLS_CERT_FILE`: the path to your X.509 PEM-encoded certificate (or chain) for the domain
+    * `VELOCITA_TLS_KEY_FILE`: the path to the private key associated with the certificate
 
-    4. Start Velocita:
+4. Start Velocita:
 
-        ```
-        docker-compose -f docker-compose.yml -f docker-compose.https.yml up -d
-        ```
+    ```
+    docker-compose -f docker-compose.yml -f docker-compose.https.yml up -d
+    ```
 
-    5. Done!
+5. Done!
 
-2. Run the Docker image directly: see [the image's usage instructions](proxy/README.md).
+#### Using docker
+
+Alternatively, you can run the Docker image directly: see [the image's usage instructions](proxy/README.md).
 
 ### Using Composer-velocita
 
