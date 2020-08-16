@@ -46,6 +46,10 @@ fastcgi_temp_path     /tmp/fastcgi_temp;
 uwsgi_temp_path       /tmp/uwsgi_temp;
 scgi_temp_path        /tmp/scgi_temp;
 
+# Log format
+log_format upstreamlog '$remote_addr - $remote_user [$time_local] upstream $proxy_host $upstream_addr [$upstream_cache_status] $request [$upstream_status] ${upstream_response_time}ms ${upstream_response_length}b';
+access_log /var/log/nginx/access.log upstreamlog;
+
 # Caching configuration
 proxy_cache_convert_head off;
 proxy_cache_key $request_method$scheme$proxy_host$request_uri;
