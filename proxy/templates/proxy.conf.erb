@@ -65,7 +65,7 @@ proxy_http_version 1.1;
 proxy_max_temp_file_size 2m;
 proxy_read_timeout 10s;
 proxy_send_timeout 10s;
-proxy_set_header User-Agent "Velocita Composer Cache";
+proxy_socket_keepalive on;
 proxy_ssl_protocols TLSv1.3 TLSv1.2;
 
 # Remove and ignore headers from proxy server responses
@@ -84,9 +84,6 @@ proxy_cache_path /var/cache/velocita/<%= name %> levels=2:2 keys_zone=<%= name %
 proxy_redirect <%= mirror[:url] %> <%= velocita_url %>/mirror/<%= mirror[:path] %>/;
 <%- end -%>
 
-# Allow keepalive to upstream
-proxy_set_header Connection "";
-proxy_socket_keepalive on;
 <%- if tls_enabled -%>
 
 # TLS configuration
@@ -128,7 +125,11 @@ server {
     location /mirror/<%= mirror[:path] %>/ {
         proxy_pass <%= mirror[:url] %>;
         proxy_cache <%= mirror[:cache] %>;
-    <%- case mirror[:auth_type] -%>
+
+        proxy_set_header Connection '';
+        proxy_set_header Host $proxy_host;
+        proxy_set_header User-Agent 'Velocita Composer Cache';
+    <% case mirror[:auth_type] -%>
     <%- when 'basic' -%>
       <%- unless mirror[:auth_user].empty? || mirror[:auth_pass].empty? -%>
         proxy_set_header Authorization "Basic <%= Base64.strict_encode64("#{mirror[:auth_user]}:#{mirror[:auth_pass]}") %>";
