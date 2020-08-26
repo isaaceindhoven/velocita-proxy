@@ -15,8 +15,8 @@ Velocita is a caching reverse proxy for Composer repositories and package distri
 
 There are two parts to Velocita:
 
-* Velocita Proxy, which acts as a caching reverse proxy
-* Composer-velocita, which instructs Composer to retrieve files from Velocita Proxy
+* Velocita Proxy, a caching reverse proxy
+* [Composer-velocita](https://github.com/isaaceindhoven/composer-velocita), a plugin which instructs Composer to use a Velocita Proxy instance
 
 ### Running Velocita Proxy
 
