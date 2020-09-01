@@ -16,7 +16,7 @@ dockerComposeFiles='-f docker-compose.yml -f docker-compose.build.yml'
 
 buildAndPush() {
     local version=$1
-    BUILD_VERSION=${version} docker-compose ${dockerComposeFiles} build
+    BUILD_VERSION=${version} docker-compose ${dockerComposeFiles} build --no-cache
     BUILD_VERSION=${version} docker-compose ${dockerComposeFiles} push
 }
 
