@@ -1,6 +1,6 @@
 FROM nginx:1.19.1-alpine
 
-LABEL maintainer="Jelle Raaijmakers <jelle.raaijmakers@isaac.nl>"
+LABEL maintainer="Jelle Raaijmakers <jelle@gmta.nl>"
 
 RUN apk --no-cache upgrade \
     && apk --no-cache add ruby \
