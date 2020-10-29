@@ -129,7 +129,7 @@ server {
         proxy_set_header Connection '';
         proxy_set_header Host $proxy_host;
         proxy_set_header User-Agent 'Velocita Composer Cache';
-    <% case mirror[:auth_type] -%>
+    <%- case mirror[:auth_type] -%>
     <%- when 'basic' -%>
       <%- unless mirror[:auth_user].empty? || mirror[:auth_pass].empty? -%>
         proxy_set_header Authorization "Basic <%= Base64.strict_encode64("#{mirror[:auth_user]}:#{mirror[:auth_pass]}") %>";
