@@ -23,15 +23,16 @@ ENV.keys.map { |key| key.to_s }
         end
 
         caches[friendly_name] = {
-            :size   => ENV["MIRROR_#{name}_CACHE_SIZE"] || '1g',
+            :size => ENV["MIRROR_#{name}_CACHE_SIZE"] || '1g',
             :expiry => ENV["MIRROR_#{name}_CACHE_EXPIRY"] || '3650d',
         }
 
         mirrors[friendly_name] = {
-            :type      => ENV["MIRROR_#{name}_TYPE"] || 'simple',
-            :path      => friendly_name,
-            :url       => url,
-            :cache     => friendly_name,
+            :type => ENV["MIRROR_#{name}_TYPE"] || 'simple',
+            :path => friendly_name,
+            :url => url,
+            :cache => friendly_name,
+            :revalidate => ['true', '1', 'on', 'yes'].include?(ENV["MIRROR_#{name}_ALLOW_REVALIDATE"]),
             :auth_type => ENV["MIRROR_#{name}_AUTH_TYPE"] || 'basic',
             :auth_user => ENV["MIRROR_#{name}_AUTH_USERNAME"] || '',
             :auth_pass => ENV["MIRROR_#{name}_AUTH_PASSWORD"] || '',
@@ -55,7 +56,6 @@ proxy_cache_background_update on;
 proxy_cache_convert_head off;
 proxy_cache_key $request_method$scheme$proxy_host$request_uri;
 proxy_cache_lock on;
-proxy_cache_revalidate on;
 proxy_cache_use_stale error timeout updating http_403 http_404 http_429 http_500 http_502 http_503 http_504;
 proxy_cache_valid 200 302 1d;
 proxy_cache_valid 404 30s;
@@ -126,6 +126,7 @@ server {
     location /mirror/<%= mirror[:path] %>/ {
         proxy_pass <%= mirror[:url] %>;
         proxy_cache <%= mirror[:cache] %>;
+        proxy_cache_revalidate <%= mirror[:revalidate] ? 'on' : 'off' %>;
 
         proxy_set_header Connection '';
         proxy_set_header Host $proxy_host;
