@@ -51,11 +51,12 @@ log_format upstreamlog '$remote_addr - $remote_user [$time_local] upstream $prox
 access_log /var/log/nginx/access.log upstreamlog;
 
 # Caching configuration
+proxy_cache_background_update on;
 proxy_cache_convert_head off;
 proxy_cache_key $request_method$scheme$proxy_host$request_uri;
 proxy_cache_lock on;
 proxy_cache_revalidate on;
-proxy_cache_use_stale error timeout http_403 http_404 http_429 http_500 http_502 http_503 http_504;
+proxy_cache_use_stale error timeout updating http_403 http_404 http_429 http_500 http_502 http_503 http_504;
 proxy_cache_valid 200 302 1d;
 proxy_cache_valid 404 30s;
 
