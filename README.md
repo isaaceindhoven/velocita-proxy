@@ -78,26 +78,26 @@ installing the PHPUnit dependencies from `composer.lock`:
 
 | Configuration       | Duration     | Relative |
 | ------------------- |:------------:|:--------:|
-| Composer            |  3.5s ± 0.1s |   100%   |
-| Composer + Velocita |  1.2s ± 0.0s |    34%   |
+| Composer            |  1.5s ± 0.2s |   100%   |
+| Composer + Velocita |  0.7s ± 0.0s |    49%   |
 
-Command: `composer install --profile` after `composer require phpunit/phpunit:8.5.8` and clearing both the local cache
+Command: `composer install --profile` after `composer require phpunit/phpunit:9.5.2` and clearing both the local cache
 and the vendor folder.
 
 Velocita works great together with Symfony Flex:
 
 | Configuration                      | Duration    | Relative |
 | ---------------------------------- |:-----------:|:--------:|
-| Composer + Symfony Flex            | 7.0s ± 0.1s |   100%   |
-| Composer + Symfony Flex + Velocita | 3.7s ± 0.0s |    52%   |
+| Composer + Symfony Flex            | 3.7s ± 0.2s |   100%   |
+| Composer + Symfony Flex + Velocita | 2.1s ± 0.0s |    55%   |
 
-Command: `composer create-project symfony/skeleton:v5.1.99 symfony --profile` after clearing the local cache.
+Command: `composer create-project symfony/skeleton:v5.2.99 symfony --profile` after clearing the local cache.
 
 Benchmark setup:
 
 * Velocita is configured with mirrors for Packagist, GitHub Codeload and Symfony Flex
-* PHP 7.2.31
-* Composer version 2.0.0-alpha3
+* PHP 7.3.24
+* Composer version 2.0.6
 
 ## Authors
 
