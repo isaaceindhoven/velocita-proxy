@@ -68,6 +68,7 @@ proxy_read_timeout 10s;
 proxy_send_timeout 10s;
 proxy_socket_keepalive on;
 proxy_ssl_protocols TLSv1.3 TLSv1.2;
+proxy_ssl_server_name on;
 
 # Remove and ignore headers from proxy server responses
 proxy_hide_header Cache-Control;
