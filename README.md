@@ -96,7 +96,7 @@ Command: `composer create-project symfony/skeleton:v5.2.99 symfony --profile` af
 Benchmark setup:
 
 * Velocita is configured with mirrors for Packagist, GitHub Codeload and Symfony Flex
-* PHP 7.3.24
+* PHP version 7.3.24
 * Composer version 2.0.6
 
 ## Authors
