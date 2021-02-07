@@ -27,7 +27,8 @@ Velocita configures itself with the environment variables you pass.
 | Environment variable   | Required | Type                              | Description                            |
 | ---------------------- | -------- | --------------------------------- | -------------------------------------- |
 | `VELOCITA_URL`         | No       | URL (default: `http://localhost`) | The URL at which Velocita is reachable |
-| `VELOCITA_TLS_ENABLED` | No       | One of: `true`, `false` (default) | If HTTPS should be enabled             |
+| `VELOCITA_TLS_ENABLED` | No       | One of: `true`, `false` (default) | Enable HTTPS                           |
+| `VELOCITA_AUTH_TYPE`   | No       | One of: `none` (default), `basic` | Enable HTTP authentication             |
 
 ## Configuring mirrors
 
@@ -81,8 +82,8 @@ docker run -d --name velocita -p 80:8080 \
 * Open up port `443`
 * Update `VELOCITA_URL` to use `https://`
 * Set `VELOCITA_TLS_ENABLED` to `true`
-* Mount your X.509 PEM-encoded certificate (or chain) and key file inside the container at `/etc/nginx/server.crt` and
-  `/etc/nginx/server.key`
+* Provide your X.509 PEM-encoded certificate (or chain) and key file inside the container at `/etc/nginx/server.crt`
+  and `/etc/nginx/server.key`
 
 ```
 docker run -d --name velocita -p 80:8080 -p 443:8443 \
@@ -96,3 +97,8 @@ docker run -d --name velocita -p 80:8080 -p 443:8443 \
 ```
 
 HTTP requests will be redirected to HTTPS.
+
+## Enabling basic authentication
+
+* Set `VELOCITA_AUTH_TYPE` to `basic`
+* Provide a Nginx-compatible `htpasswd` file inside the container at `/etc/nginx/users.htpasswd`
