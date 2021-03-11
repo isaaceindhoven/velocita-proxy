@@ -1,6 +1,6 @@
 # Velocita
 
-[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/isaaceindhoven/velocita-proxy)](https://hub.docker.com/r/isaaceindhoven/velocita-proxy)
+[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/isaaceindhoven/velocita-proxy?sort=semver)](https://hub.docker.com/r/isaaceindhoven/velocita-proxy)
 [![Docker Pulls](https://img.shields.io/docker/pulls/isaaceindhoven/velocita-proxy)](https://hub.docker.com/r/isaaceindhoven/velocita-proxy)
 [![License](https://img.shields.io/github/license/isaaceindhoven/velocita-proxy)](https://github.com/isaaceindhoven/velocita-proxy/blob/master/LICENSE)
 
