@@ -10,18 +10,16 @@ if [ -z "${targetVersion}" ]; then
     exit 1
 fi
 
-pushd $(dirname $0)/../
+pushd $(dirname $0)/../proxy/ >/dev/null
 
-dockerComposeFiles='-f docker-compose.yml -f docker-compose.build.yml'
-
-buildAndPush() {
-    local version=$1
-    BUILD_VERSION=${version} docker-compose ${dockerComposeFiles} build --no-cache
-    BUILD_VERSION=${version} docker-compose ${dockerComposeFiles} push
-}
+imageName=isaaceindhoven/velocita-proxy
 
 git tag "v${targetVersion}"
 git push --tags
 
-buildAndPush "${targetVersion}"
-buildAndPush latest
+docker buildx build \
+    --platform linux/amd64,linux/arm64,linux/arm/v7 \
+    --tag ${imageName}:${targetVersion} \
+    --tag ${imageName}:latest \
+    --push \
+    .
