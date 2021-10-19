@@ -1,0 +1,64 @@
+<%
+
+velocita_url = ENV["VELOCITA_URL"]
+
+mirrors = {}
+ENV.keys.map { |key| key.to_s }
+    .select { |key| key.match(/^MIRROR_.+_URL$/) }
+    .map { |key| key[/^MIRROR_(.+)_URL$/, 1] }
+    .each do |name|
+        mirrors[name] = {
+            :url => ENV["MIRROR_#{name}_URL"],
+        }
+    end
+
+-%>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Velocita</title>
+  <style>
+    body {
+      background-color: #eee;
+      font-family: sans-serif;
+    }
+    h2 {
+      font-size: 1.2em;
+    }
+    pre {
+      white-space: pre-line;
+    }
+    section {
+      background-color: #fff;
+      box-shadow:  ;
+      margin: 50px;
+      padding: 15px;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <h1>Welcome to Velocita</h1>
+    <p>
+      Velocita is a caching reverse proxy for Composer repositories and package distribution locations, such as Packagist or GitHub.
+    </p>
+    <h2>Getting started</h2>
+    <p>
+      Install <a href="https://packagist.org/packages/isaac/composer-velocita">composer-velocita</a> and point it to <a href="<%= velocita_url %>"><%= velocita_url %></a>:
+    </p>
+    <pre>
+      composer global require isaac/composer-velocita
+      composer velocita:enable <%= velocita_url %>
+    </pre>
+    <h2>Configured mirrors</h2>
+    <p>
+      Mirrors for the following locations are configured and active:
+    </p>
+    <ul>
+      <%- mirrors.each_with_index do |(name, mirror), index| -%>
+      <li><%= mirror[:url] %></li>
+      <%- end -%>
+    </ul>
+  </section>
+</body>
+</html>
