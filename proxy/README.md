@@ -61,6 +61,7 @@ For every mirror, the following configuration options are available:
 | `MIRROR_{name}_AUTH_TYPE`        | No       | Always `basic` (default)               | Type of upstream authentication         |
 | `MIRROR_{name}_AUTH_USERNAME`    | No       | String                                 | Username for basic authentication       |
 | `MIRROR_{name}_AUTH_PASSWORD`    | No       | String                                 | Password for basic authentication       |
+| `MIRROR_{name}_USER_AGENT`       | No       | String                                 | User Agent header sent to upstream      |
 
 For time and size unit syntax, see: http://nginx.org/en/docs/syntax.html
 

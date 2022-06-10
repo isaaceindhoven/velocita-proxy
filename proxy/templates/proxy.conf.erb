@@ -37,6 +37,7 @@ ENV.keys.map { |key| key.to_s }
             :auth_type => ENV["MIRROR_#{name}_AUTH_TYPE"] || 'basic',
             :auth_user => ENV["MIRROR_#{name}_AUTH_USERNAME"] || '',
             :auth_pass => ENV["MIRROR_#{name}_AUTH_PASSWORD"] || '',
+            :user_agent => ENV["MIRROR_#{name}_USER_AGENT"] || 'Velocita Composer Cache',
         }
     end
 
@@ -138,7 +139,7 @@ server {
 
         proxy_set_header Connection '';
         proxy_set_header Host $proxy_host;
-        proxy_set_header User-Agent 'Velocita Composer Cache';
+        proxy_set_header User-Agent '<%= mirror[:user_agent] %>';
     <%- case mirror[:auth_type] -%>
     <%- when 'basic' -%>
       <%- unless mirror[:auth_user].empty? || mirror[:auth_pass].empty? -%>
