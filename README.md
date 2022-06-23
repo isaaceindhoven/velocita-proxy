@@ -7,9 +7,9 @@
 Velocita is a caching reverse proxy for Composer repositories and package distribution locations, such as Packagist or GitHub.
 
 * Speeds up downloads for package metadata and dist files
-* Serves cached files if the source location is unreachable or experiencing problems
-* Can be used as a shared cache by multiple developers
-* No changes required to your project's files
+* Serves cached files even if the source location is unreachable
+* Can be used as a shared cache by multiple developers, CI, etc.
+* No changes required to your project's files!
 
 ## Installation
 
