@@ -47,6 +47,7 @@ ENV.keys.map { |key| key.to_s }
       Install <a href="https://packagist.org/packages/isaac/composer-velocita">composer-velocita</a> and point it to <a href="<%= velocita_url %>"><%= velocita_url %></a>:
     </p>
     <pre>
+      composer global config allow-plugins.isaac/composer-velocita true
       composer global require isaac/composer-velocita
       composer velocita:enable <%= velocita_url %>
     </pre>

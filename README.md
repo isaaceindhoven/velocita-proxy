@@ -56,12 +56,13 @@ Alternatively, you can run the Docker image directly: see [the image's usage ins
 [Composer-velocita](https://github.com/isaaceindhoven/composer-velocita) is a Composer plugin that redirects downloads
 to your Velocita instance for all repositories it supports.
 
-Run the following two commands on the machine where you want to enable Velocita, replacing `https://your.velocita.tld/`
-with the URL of your instance:
+Run the following two commands on the machine where you want to enable Velocita, replacing
+`https://url.to.your.velocita.tld/` with the URL of your instance:
 
 ```
+composer global config allow-plugins.isaac/composer-velocita true
 composer global require isaac/composer-velocita
-composer velocita:enable https://your.velocita.tld/
+composer velocita:enable https://url.to.your.velocita.tld/
 ```
 
 And you're all set!
