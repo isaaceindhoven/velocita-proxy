@@ -148,8 +148,8 @@ server {
     <%- end -%>
     <%- if mirror[:type] == 'composer' -%>
 
-        location ~ /mirror/<%= mirror[:path] %>(.*/packages.json)$ {
-            proxy_pass <%= mirror[:url] %>$1;
+        location = /mirror/<%= mirror[:path] %>/packages.json {
+            proxy_pass <%= mirror[:url] %>packages.json;
             proxy_cache_valid 200 2m;
         }
     <%- end -%>
