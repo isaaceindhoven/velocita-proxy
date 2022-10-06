@@ -51,17 +51,18 @@ docker run -d --name velocita -p 80:8080 \
 
 For every mirror, the following configuration options are available:
 
-| Environment variable             | Required | Type                                   | Description                             |
-| -------------------------------- | -------- | -------------------------------------- | --------------------------------------- |
-| `MIRROR_{name}_URL`              | Yes      | URL                                    | The URL of the upstream server to proxy |
-| `MIRROR_{name}_TYPE`             | No       | One of: `simple` (default), `composer` | The mirror type                         |
-| `MIRROR_{name}_CACHE_EXPIRY`     | No       | Time (default: `3650d`)                | Time after which cached items expire    |
-| `MIRROR_{name}_CACHE_SIZE`       | No       | Size (default: `1g`)                   | Maximum size of this mirror's cache     |
-| `MIRROR_{name}_ALLOW_REVALIDATE` | No       | Boolean (default: `false`)             | Allow revalidation of cached items      |
-| `MIRROR_{name}_AUTH_TYPE`        | No       | Always `basic` (default)               | Type of upstream authentication         |
-| `MIRROR_{name}_AUTH_USERNAME`    | No       | String                                 | Username for basic authentication       |
-| `MIRROR_{name}_AUTH_PASSWORD`    | No       | String                                 | Password for basic authentication       |
-| `MIRROR_{name}_USER_AGENT`       | No       | String                                 | User Agent header sent to upstream      |
+| Environment variable                 | Required | Type                                   | Description                              |
+| ------------------------------------ | -------- | -------------------------------------- | ---------------------------------------- |
+| `MIRROR_{name}_URL`                  | Yes      | URL                                    | The URL of the upstream server to proxy  |
+| `MIRROR_{name}_TYPE`                 | No       | One of: `simple` (default), `composer` | The mirror type                          |
+| `MIRROR_{name}_CACHE_EXPIRY`         | No       | Time (default: `3650d`)                | Time after which cached items expire     |
+| `MIRROR_{name}_CACHE_SIZE`           | No       | Size (default: `1g`)                   | Maximum size of this mirror's cache      |
+| `MIRROR_{name}_ALLOW_REVALIDATE`     | No       | Boolean (default: `false`)             | Allow revalidation of cached items       |
+| `MIRROR_{name}_PACKAGES_JSON_EXPIRY` | No       | Time (default: `2m`)                   | Time after which `packages.json` expires |
+| `MIRROR_{name}_AUTH_TYPE`            | No       | Always `basic` (default)               | Type of upstream authentication          |
+| `MIRROR_{name}_AUTH_USERNAME`        | No       | String                                 | Username for basic authentication        |
+| `MIRROR_{name}_AUTH_PASSWORD`        | No       | String                                 | Password for basic authentication        |
+| `MIRROR_{name}_USER_AGENT`           | No       | String                                 | User Agent header sent to upstream       |
 
 For time and size unit syntax, see: http://nginx.org/en/docs/syntax.html
 

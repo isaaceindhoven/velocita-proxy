@@ -34,6 +34,7 @@ ENV.keys.map { |key| key.to_s }
             :url => url,
             :cache => friendly_name,
             :revalidate => ['true', '1', 'on', 'yes'].include?(ENV["MIRROR_#{name}_ALLOW_REVALIDATE"]),
+            :packages_json_expiry => ENV["MIRROR_#{name}_PACKAGES_JSON_EXPIRY"] || '2m',
             :auth_type => ENV["MIRROR_#{name}_AUTH_TYPE"] || 'basic',
             :auth_user => ENV["MIRROR_#{name}_AUTH_USERNAME"] || '',
             :auth_pass => ENV["MIRROR_#{name}_AUTH_PASSWORD"] || '',
@@ -150,7 +151,7 @@ server {
 
         location = /mirror/<%= mirror[:path] %>/packages.json {
             proxy_pass <%= mirror[:url] %>packages.json;
-            proxy_cache_valid 200 2m;
+            proxy_cache_valid 200 <%= mirror[:packages_json_expiry] %>;
         }
     <%- end -%>
     }
