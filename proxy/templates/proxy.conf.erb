@@ -147,6 +147,10 @@ server {
       <%- unless mirror[:auth_user].empty? || mirror[:auth_pass].empty? -%>
         proxy_set_header Authorization "Basic <%= Base64.strict_encode64("#{mirror[:auth_user]}:#{mirror[:auth_pass]}") %>";
       <%- end -%>
+    <%- when 'bearer' -%>
+      <%- unless mirror[:auth_pass].empty? -%>
+        proxy_set_header Authorization "Bearer <%= mirror[:auth_pass] %>";
+      <%- end -%>
     <%- end -%>
     <%- if mirror[:type] == 'composer' -%>
 
