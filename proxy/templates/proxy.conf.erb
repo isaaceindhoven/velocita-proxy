@@ -76,8 +76,9 @@ proxy_ssl_server_name on;
 # Remove and ignore headers from proxy server responses
 proxy_hide_header Cache-Control;
 proxy_hide_header Expires;
+proxy_hide_header Set-Cookie;
 proxy_hide_header Strict-Transport-Security;
-proxy_ignore_headers Cache-Control Expires;
+proxy_ignore_headers Cache-Control Expires Set-Cookie;
 
 # Caching paths
 <%- caches.each do |name, cache| -%>
