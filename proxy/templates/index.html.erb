@@ -1,6 +1,6 @@
 <%
 
-velocita_url = ENV["VELOCITA_URL"]
+velocita_url = ENV['VELOCITA_URL'] || 'http://localhost'
 
 mirrors = {}
 ENV.keys.map { |key| key.to_s }
