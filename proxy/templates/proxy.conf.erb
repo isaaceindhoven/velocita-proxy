@@ -114,6 +114,7 @@ gzip_types application/json;
 
 server {
     listen 8080 default_server;
+    listen [::]:8080 default_server;
     server_name _;
 
     return 301 <%= velocita_url %>$request_uri;
@@ -123,11 +124,13 @@ server {
 server {
 <%- if tls_enabled -%>
     listen 8443 ssl http2 default_server;
+    listen [::]:8443 ssl http2 default_server;
 
     ssl_certificate /etc/nginx/server.crt;
     ssl_certificate_key /etc/nginx/server.key;
 <%- else -%>
     listen 8080 default_server;
+    listen [::]:8080 default_server;
 <%- end -%>
 
     server_name _;
