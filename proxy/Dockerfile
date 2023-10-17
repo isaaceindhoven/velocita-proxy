@@ -1,4 +1,4 @@
-FROM nginx:1.25.1-alpine3.17
+FROM nginx:1.25.2-alpine3.18
 
 LABEL maintainer="Jelle Raaijmakers <jelle@gmta.nl>"
 
